@@ -6,85 +6,191 @@
     <title>Login</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #FFFFFF; /* Clean white background */
             margin: 0;
             padding: 0;
+            font-family: 'Arial', sans-serif;
             display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Logo Styling */
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10; /* Ensures it stays above everything */
+        }
+
+        .logo {
+            height: 120px; /* Proper size for the logo */
+        }
+
+        /* Left Section */
+        .left-section {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            color: #333333; /* Neutral text for readability */
+            background: linear-gradient(to right, #FFDEE9, #FFFFFF, #ECEAE6);
+            padding: 20px;
+            position: relative;
         }
-        .login-container {
-            background-color: #E3F2FD; /* Soft blue background for the container */
-            border-radius: 10px;
+
+        /* Right Section */
+        .right-section {
+            width: 50%;
+            background: url("{{ url_for('static', filename='images/background2.webp') }}") no-repeat center center;
+            background-size: cover;
+        }
+
+        /* Login Box */
+        .login-box {
+            background: #ffffff;
             padding: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 350px;
             text-align: center;
         }
+
         h1 {
-            color: #3B82F6; /* Vibrant blue for headings */
-            font-size: 26px;
+            color: #3B82F6;
+            font-size: 24px;
             margin-bottom: 20px;
         }
+
         label {
             font-weight: bold;
-            color: #333333; /* Charcoal for labels */
+            color: #333333;
             display: block;
             margin-bottom: 5px;
             text-align: left;
         }
+
         input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            box-sizing: border-box;
             font-size: 14px;
-            background-color: #FFFFFF; /* White for inputs */
+            box-sizing: border-box;
         }
+
         input[type="submit"] {
-            background-color: #3B82F6; /* Royal blue for buttons */
-            color: #FFFFFF;
+            background-color: #3B82F6;
+            color: #ffffff;
             border: none;
             padding: 12px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            transition: background-color 0.3s ease;
         }
+
         input[type="submit"]:hover {
-            background-color: #2563EB; /* Darker blue on hover */
+            background-color: #2563EB;
         }
+
         p {
             margin-top: 15px;
             font-size: 14px;
         }
+
         a {
-            color: #F97316; /* Deep orange for links */
+            color: #F97316;
             text-decoration: none;
             font-weight: bold;
         }
+
         a:hover {
             text-decoration: underline;
+        }
+
+        /* Sliding Section */
+        .sliding-section {
+            width: 100%;
+            height: 80px;
+            background-color: #3B82F6;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .sliding-content {
+            display: flex;
+            animation: slide 15s linear infinite;
+        }
+
+        .sliding-item {
+            flex: 0 0 auto;
+            width: 200px;
+            margin: 0 20px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .sliding-item img {
+            height: 40px;
+            margin: 5px auto;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-section, .right-section {
+                width: 100%;
+                height: 50%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h1>Login</h1>
-        <form method="POST">
-            <label for="identifier">Email or Phone Number:</label>
-            <input type="text" id="identifier" name="identifier" required>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <input type="submit" value="Login">
-        </form>
-        <p><a href="{{ url_for('signup') }}">Don't have an account? Sign up here</a></p>
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='images/logo4.png') }}" alt="Logo" class="logo">
+    </div>
+    <div class="container">
+        <div class="left-section">
+            <div class="login-box">
+                <h1>Login</h1>
+                <form method="POST">
+                    <label for="identifier">Email:</label>
+                    <input type="text" id="identifier" name="identifier" placeholder="Enter your email" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <input type="submit" value="Login">
+                </form>
+                <p>New member? <a href="{{ url_for('signup') }}">Sign up!</a></p>
+            </div>
+        </div>
+        <div class="right-section">
+            <!-- Background image is applied as the section's background -->
+        </div>
+    </div>
+    <div class="sliding-section">
+        <div class="sliding-content">
+            <div class="sliding-item">Empowering Healthcare</div>
+            <div class="sliding-item"><img src="{{ url_for('static', filename='images/ai-icon.png') }}" alt="AI Logo"> AI-Powered Diagnostics</div>
+            <div class="sliding-item">Simplified Experiences</div>
+            <div class="sliding-item"><img src="{{ url_for('static', filename='images/health-icon.png') }}" alt="Health Logo"> Reliable Healthcare</div>
+        </div>
     </div>
 </body>
 </html>

@@ -4,36 +4,168 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Logo Styling */
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10; /* Ensures it stays above everything */
+        }
+
+        .logo {
+            height: 120px; /* Proper size for the logo */
+        }
+
+        /* Left Section */
+        .left-section {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to right, #FFDEE9, #FFFFFF, #ECEAE6);
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Right Section */
+        .right-section {
+            width: 50%;
+            background: url("{{ url_for('static', filename='images/background2.webp') }}") no-repeat center center;
+            background-size: cover;
+        }
+
+        /* Signup Box */
+        .signup-box {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #3B82F6;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333333;
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #3B82F6;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2563EB;
+        }
+
+        p {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        a {
+            color: #F97316;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-section, .right-section {
+                width: 100%;
+                height: 50%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Sign Up</h1>
-    <form method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='images/logo4.png') }}" alt="Logo" class="logo">
+    </div>
+    <div class="container">
+        <div class="left-section">
+            <div class="signup-box">
+                <h1>Sign Up</h1>
+                <form method="POST">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
-        <label for="email_id">Email ID:</label>
-        <input type="email" id="email_id" name="email_id"><br><br>
+                    <label for="email_id">Email ID:</label>
+                    <input type="email" id="email_id" name="email_id" placeholder="Enter your email" required>
 
-        <label for="phone_no">Phone Number:</label>
-        <input type="text" id="phone_no" name="phone_no" required><br><br>
+                    <label for="phone_no">Phone Number:</label>
+                    <input type="text" id="phone_no" name="phone_no" placeholder="Enter your phone number" required>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Create a password" required>
 
-        <label for="age">Age:</label>
-        <input type="number" id="age" name="age" required><br><br>
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" name="age" placeholder="Enter your age" required>
 
-        <label for="gender">Gender:</label>
-        <select id="gender" name="gender" required>
-            <option value="" disabled selected>Choose your gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-        </select><br><br>
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="" disabled selected>Choose your gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
 
-        <input type="submit" value="Sign Up">
-    </form>
-
-    <p><a href="{{ url_for('login') }}">Already have an account? Login here</a></p>
+                    <input type="submit" value="Sign Up">
+                </form>
+                <p><a href="{{ url_for('login') }}">Already have an account? Login here</a></p>
+            </div>
+        </div>
+        <div class="right-section">
+            <!-- Background image is applied as the section's background -->
+        </div>
+    </div>
 </body>
 </html>
