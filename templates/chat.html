@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        #chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            height: 400px;
+            overflow-y: scroll;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .user-message {
+            text-align: right;
+            background-color: #d1f7d1;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .assistant-message {
+            text-align: left;
+            background-color: #e8e8e8;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        #chat-form {
+            display: flex;
+            margin-top: 10px;
+        }
+        #user-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #send-button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        #send-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat Interface</h1>
+    <div id="chat-container"></div>
+    <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Type your message..." required>
+        <button type="submit" id="send-button">Send</button>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const chatContainer = document.getElementById("chat-container");
+            const chatForm = document.getElementById("chat-form");
+            const userInput = document.getElementById("user-input");
+
+            chatForm.addEventListener("submit", (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                const userMessage = userInput.value.trim();
+                if (!userMessage) {
+                    alert("Please enter a message.");
+                    return;
+                }
+
+                // Add user message to the chat
+                addMessage(userMessage, "user");
+                userInput.value = ""; // Clear input
+
+                // Send the message to the server
+                fetch("/chat_result", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: `message=${encodeURIComponent(userMessage)}`,
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        // Add assistant's response to the chat
+                        addMessage(formatMessage(data.reply), "assistant");
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                        addMessage("Something went wrong. Please try again.", "assistant");
+                    });
+            });
+
+            function addMessage(content, role) {
+                const messageElement = document.createElement("div");
+                messageElement.classList.add("message", `${role}-message`);
+                messageElement.innerHTML = content;
+                chatContainer.appendChild(messageElement);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+            function formatMessage(message) {
+                // Format multiline text or bullet points
+                return message
+                    .split("\n")
+                    .map((line) => {
+                        if (line.startsWith("- ") || line.startsWith("• ")) {
+                            return `<li>${line.substring(2)}</li>`;
+                        }
+                        return `<p>${line}</p>`;
+                    })
+                    .join("");
+            }
+        });
+    </script>
+</body>
+</html>

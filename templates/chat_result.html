@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Result</title>
+</head>
+<body>
+    <h1>Risk Level: {{ risk_level }}</h1>
+    {% if risk_level == "Red" %}
+        <p>{{ message }}</p>
+    {% else %}
+        <h2>Start Chatting</h2>
+        <div id="chat-interface">
+            <div id="chat-messages"></div>
+            <form id="chat-form" method="POST">
+                <input type="text" id="message" name="message" placeholder="Type your message here..." required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    {% endif %}
+    <a href="{{ url_for('reset_chat') }}">Restart Questions</a>
+</body>
+<script>
+    // Simple chat interface logic
+    const form = document.getElementById('chat-form');
+    const messagesDiv = document.getElementById('chat-messages');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const messageInput = document.getElementById('message');
+        const message = messageInput.value;
+        if (!message) return;
+
+        // Add user message to chat
+        const userMessage = document.createElement('div');
+        userMessage.textContent = `You: ${message}`;
+        messagesDiv.appendChild(userMessage);
+
+        // Send message to server
+        const response = await fetch(location.href, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message }),
+        });
+        const data = await response.json();
+
+        // Add assistant's reply to chat
+        const assistantMessage = document.createElement('div');
+        assistantMessage.textContent = `Assistant: ${data.reply}`;
+        messagesDiv.appendChild(assistantMessage);
+
+        // Clear the input field
+        messageInput.value = '';
+    });
+</script>
+</html>

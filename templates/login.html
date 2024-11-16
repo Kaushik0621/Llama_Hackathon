@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #FFFFFF; /* Clean white background */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333333; /* Neutral text for readability */
+        }
+        .login-container {
+            background-color: #E3F2FD; /* Soft blue background for the container */
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            width: 350px;
+            text-align: center;
+        }
+        h1 {
+            color: #3B82F6; /* Vibrant blue for headings */
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            color: #333333; /* Charcoal for labels */
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: #FFFFFF; /* White for inputs */
+        }
+        input[type="submit"] {
+            background-color: #3B82F6; /* Royal blue for buttons */
+            color: #FFFFFF;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #2563EB; /* Darker blue on hover */
+        }
+        p {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        a {
+            color: #F97316; /* Deep orange for links */
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login</h1>
+        <form method="POST">
+            <label for="identifier">Email or Phone Number:</label>
+            <input type="text" id="identifier" name="identifier" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" value="Login">
+        </form>
+        <p><a href="{{ url_for('signup') }}">Don't have an account? Sign up here</a></p>
+    </div>
+</body>
+</html>

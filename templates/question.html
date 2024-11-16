@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questions</title>
+</head>
+<body>
+    <h1>Answer the Following Question</h1>
+    <form method="POST">
+        <h3>{{ question.text }}</h3>
+        {% if question.multi %}
+            {% for option in question.options %}
+                <label>
+                    <input type="checkbox" name="{{ question.id }}" value="{{ option }}">
+                    {{ option }}
+                </label><br>
+            {% endfor %}
+        {% else %}
+            {% for option in question.options %}
+                <label>
+                    <input type="radio" name="{{ question.id }}" value="{{ option }}" required>
+                    {{ option }}
+                </label><br>
+            {% endfor %}
+        {% endif %}
+        <button type="submit">Next</button>
+    </form>
+</body>
+</html>
