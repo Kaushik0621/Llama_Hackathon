@@ -1,9 +1,9 @@
 # LLAMA CARE: GP Llama Receptionist
-
+<img width="757" alt="Screenshot 2024-11-17 at 12 03 58 PM" src="https://github.com/user-attachments/assets/6c2c85c9-b316-4b80-9a5a-62b8aa3b4268">
 LLAMA CARE: GP Llama Receptionist is an innovative healthcare web application designed to revolutionize patient triage for General Practitioners (GPs). Using AI-powered chat and voice-based interactions, this solution drastically reduces waiting times, enhances triage accuracy, and ensures timely responses for emergency cases.
 
 ---
-<img width="757" alt="Screenshot 2024-11-17 at 12 03 58 PM" src="https://github.com/user-attachments/assets/6c2c85c9-b316-4b80-9a5a-62b8aa3b4268">
+
 <img width="1421" alt="Screenshot 2024-11-17 at 12 04 19 PM" src="https://github.com/user-attachments/assets/a336d748-e64b-4b3a-81ab-01129d1f5cb6">
 
 
@@ -65,8 +65,7 @@ LLAMA CARE: GP Llama Receptionist is an innovative healthcare web application de
 <img width="1423" alt="Screenshot 2024-11-17 at 12 06 09 PM" src="https://github.com/user-attachments/assets/998298fe-0336-4104-ad18-cb09e77e22d0">
 <img width="1429" alt="Screenshot 2024-11-17 at 12 06 58 PM" src="https://github.com/user-attachments/assets/71f5b8ab-b7bd-48cb-86be-f21af4fa7ec4">
 
-<img width="1423" alt="Screenshot 2024-11-17 at 12 07 13 PM" src="https://github.com/user-attachments/assets/9008c70f-e230-4101-8814-3f65509e77d4">
-<img width="1433" alt="Screenshot 2024-11-17 at 12 07 28 PM" src="https://github.com/user-attachments/assets/183c81dc-cb88-4be6-973f-e39de669f599">
+
 
 ## 🚀 Getting Started
 
@@ -94,5 +93,7 @@ python3 app.py
 python3 app2.py
 ID = ADMIN
 Password = Admin@123
-### Installation
+<img width="1423" alt="Screenshot 2024-11-17 at 12 07 13 PM" src="https://github.com/user-attachments/assets/9008c70f-e230-4101-8814-3f65509e77d4">
+<img width="1433" alt="Screenshot 2024-11-17 at 12 07 28 PM" src="https://github.com/user-attachments/assets/183c81dc-cb88-4be6-973f-e39de669f599">
+### Youtube Video
 https://youtu.be/mbcKFoVQ0EI
