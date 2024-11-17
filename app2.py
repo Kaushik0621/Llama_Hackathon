@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from flask_socketio import SocketIO, emit
 
 # Configuration
 ADMIN_USERNAME = "ADMIN"
@@ -12,6 +13,8 @@ UPLOAD_FOLDER = "Admin_Data"  # Your folder structure
 
 app2 = Flask(__name__)
 app2.secret_key = os.getenv("ADMIN_SECRET_KEY", "default_admin_secret_key")
+
+socketio = SocketIO(app2)
 
 def load_user_data():
     """
@@ -181,6 +184,12 @@ def create_user_webhook():
     
     with open(user_path / "user_info.json", "w") as f:
         json.dump(user_info, f, indent=2)
+    
+    # After user creation, emit to all connected admin clients
+    socketio.emit('new_notification', {
+        'message': f"New {risk_level} priority user registered: {data['patient_name']}",
+        'type': risk_level.lower()
+    })
     
     return jsonify({
         "message": "User created successfully",
