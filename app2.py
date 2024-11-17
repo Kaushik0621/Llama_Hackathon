@@ -160,7 +160,7 @@ def create_user_webhook():
         return jsonify({"error": "Missing required fields"}), 400
     
     # Create user directory structure
-    risk_level = data['risk_level'].capitalize()
+    risk_level = data['risk_level'].title()
     user_id = secure_filename(data['phone_number'])
     user_path = Path(UPLOAD_FOLDER) / risk_level / user_id
     

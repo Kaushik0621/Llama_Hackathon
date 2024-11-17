@@ -8,12 +8,12 @@ webhook_url = "http://localhost:5001/webhook/create_user"
 
 # Sample user data matching the required fields
 test_data = {
-    "phone_number": "+4411354536222289",
+    "phone_number": "+441135236222289",
     "patient_name": "Jane Smith",
     "date_of_birth": "March 15, 1985",
     "medical_conditions": "Asthma",
     "summary": "New patient registration with asthma history",
-    "risk_level": "yellow"
+    "risk_level": "YELLOW"
 }
 
 # Set headers for JSON content
