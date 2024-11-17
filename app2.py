@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify, send_from_directory
 import os
-import json
 from pathlib import Path
+import json
 
 # Configuration
 ADMIN_USERNAME = "ADMIN"
 ADMIN_PASSWORD = "Admin@123"
-UPLOAD_FOLDER = "data"
+UPLOAD_FOLDER = "Admin_Data"  # Your folder structure
 
 app2 = Flask(__name__)
 app2.secret_key = os.getenv("ADMIN_SECRET_KEY", "default_admin_secret_key")
@@ -16,43 +16,52 @@ def load_user_data():
     Loads all user data, including chat sessions and uploads.
     """
     data_dir = Path(UPLOAD_FOLDER)
-    user_folders = [folder for folder in data_dir.iterdir() if folder.is_dir()]
-    
     user_data = []
-    for user_folder in user_folders:
-        user_chats = []
-        user_docs = []
-        risk_level = None
 
-        # Load chat session files
-        chat_dir = user_folder / "chat_session"
-        if chat_dir.exists():
-            for chat_file in chat_dir.glob("*.json"):
-                with open(chat_file, "r") as f:
-                    chat_data = json.load(f)
-                user_chats.append(chat_data)
+    red_count = 0
+    yellow_count = 0
+    green_count = 0
 
-        # Load uploaded documents
-        docs_dir = user_folder / "DOCS"
-        if docs_dir.exists():
-            user_docs = [str(doc) for doc in docs_dir.glob("*")]
+    for priority in ["Red", "Yellow", "Green"]:
+        priority_dir = data_dir / priority
 
-        # Determine risk level from the user's folder name or data (dummy logic)
-        if "red" in user_folder.name.lower():
-            risk_level = "Red"
-        elif "yellow" in user_folder.name.lower():
-            risk_level = "Yellow"
-        elif "green" in user_folder.name.lower():
-            risk_level = "Green"
+        if priority_dir.exists():
+            user_folders = [folder for folder in priority_dir.iterdir() if folder.is_dir()]
+            for user_folder in user_folders:
+                user_info = {}
+                chat_sessions = []
 
-        user_data.append({
-            "user_id": user_folder.name,
-            "chats": user_chats,
-            "docs": user_docs,
-            "risk_level": risk_level
-        })
+                # Load user_info.json
+                user_info_path = user_folder / "user_info.json"
+                if user_info_path.exists():
+                    with open(user_info_path, "r") as f:
+                        user_info = json.load(f)
 
-    return user_data
+                # Load chat session files
+                chat_dir = user_folder / "chat_session"
+                if chat_dir.exists():
+                    for chat_file in chat_dir.glob("*.json"):
+                        with open(chat_file, "r") as f:
+                            chat_data = json.load(f)
+                        chat_sessions.append(chat_data)
+
+                # Count users in each category
+                if priority == "Red":
+                    red_count += 1
+                elif priority == "Yellow":
+                    yellow_count += 1
+                elif priority == "Green":
+                    green_count += 1
+
+                # Append user data
+                user_data.append({
+                    "user_id": user_folder.name,
+                    "user_info": user_info,
+                    "risk_level": priority,
+                    "chats": chat_sessions
+                })
+
+    return user_data, red_count, yellow_count, green_count
 
 @app2.route('/')
 def admin_index():
@@ -77,23 +86,27 @@ def admin_login():
 def admin_dashboard():
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
-    return render_template('admin_dashboard.html')
 
-@app2.route('/admin/users')
-def admin_users():
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
+    # Get the user data and counts
+    user_data, red_count, yellow_count, green_count = load_user_data()
 
-    user_data = load_user_data()
-    return render_template('admin_users.html', user_data=user_data)
+    # Pass the data to the template
+    return render_template('admin_dashboard.html', 
+                           red_count=red_count, 
+                           yellow_count=yellow_count, 
+                           green_count=green_count)
 
 @app2.route('/admin/queue/<queue>')
 def admin_queue(queue):
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
 
-    user_data = load_user_data()
+    # Get user data based on the queue passed
+    user_data, red_count, yellow_count, green_count = load_user_data()
+
+    # Filter users based on the queue type (Red, Yellow, Green)
     filtered_users = [user for user in user_data if user['risk_level'] == queue.capitalize()]
+
     return render_template('admin_queue.html', queue=queue.capitalize(), users=filtered_users)
 
 @app2.route('/admin/user/<user_id>')
@@ -101,24 +114,16 @@ def admin_user_detail(user_id):
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
 
-    user_data = load_user_data()
+    # Get user data based on user_id
+    user_data, _, _, _ = load_user_data()
+
+    # Find the user by user_id
     user_info = next((user for user in user_data if user['user_id'] == user_id), None)
 
     if not user_info:
         return "User not found.", 404
 
     return render_template('admin_user_detail.html', user_info=user_info)
-
-@app2.route('/admin/download/<path:filename>')
-def admin_download(filename):
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
-
-    file_path = Path(filename)
-    if file_path.exists():
-        return send_from_directory(file_path.parent, file_path.name, as_attachment=True)
-
-    return "File not found.", 404
 
 @app2.route('/admin/logout')
 def admin_logout():

@@ -8,133 +8,237 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom right, #f0f4f8, #d9e2ec);
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* Prevent scroll */
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            color: white;
+            padding: 5px 30px; /* Reduced padding to make the header smaller */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .logo img {
+            height: 100px; /* Reduced logo size */
+        }
+
+        .header .title {
+            font-size: 40px; /* Reduced title font size */
+            font-weight: bold;
+        }
+
+        .header .logout-link {
+            color: white;
+            text-decoration: none;
+            background-color: #E74C3C;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .header .logout-link:hover {
+            background-color: #C0392B;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 10px; /* Reduced gap between header and main content */
+            margin-bottom: 60px; /* Add space for footer */
+            overflow: hidden;
+        }
+
+        /* Left Section (Priority Cards) */
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            width: 30%;
+            gap: 10px;
+        }
+
+        /* Queue Section */
+        .queue-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease, border 0.5s ease, box-shadow 0.3s ease;
+            flex: 1; /* Ensure cards are aligned */
+            width: 50%; /* Ensure cards take full width */
+        }
+
+        .queue-section h2 {
+            color: #2C3E50;
+            font-size: 20px;
+        }
+
+        .queue-section p {
+            font-size: 18px;
             color: #333;
         }
 
-        /* Header Section */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #6c91c2; /* Lighter blue shade */
-            padding: 10px 20px;
+        /* Make Red Priority larger */
+        .queue-section.larger {
+            flex: 2; /* Red card takes more space */
+        }
+
+        /* Hover effect */
+        .queue-section:hover {
+            transform: scale(1.05); /* Slight scaling effect */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
+        }
+
+        /* Priority Indicators */
+        .priority-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .priority-red {
+            background-color: #E74C3C;
+        }
+
+        .priority-yellow {
+            background-color: #F1C40F;
+        }
+
+        .priority-green {
+            background-color: #27AE60;
+        }
+
+        /* Moving border effect */
+        .queue-section.larger {
+            border: 4px solid #E74C3C;
+            animation: border-animation-red 3s infinite alternate;
+        }
+
+        .queue-section:nth-child(2) {
+            border: 4px solid #F1C40F;
+            animation: border-animation-yellow 3s infinite alternate;
+        }
+
+        .queue-section:nth-child(3) {
+            border: 4px solid #27AE60;
+            animation: border-animation-green 3s infinite alternate;
+        }
+
+        /* Border Animation */
+        @keyframes border-animation-red {
+            0% { border-color: #E74C3C; }
+            100% { border-color: #C0392B; }
+        }
+
+        @keyframes border-animation-yellow {
+            0% { border-color: #F1C40F; }
+            100% { border-color: #F39C12; }
+        }
+
+        @keyframes border-animation-green {
+            0% { border-color: #27AE60; }
+            100% { border-color: #2ECC71; }
+        }
+
+        /* Right Section (Background Image) */
+        .right-section {
+            width: 50%;
+            background: url('{{ url_for("static", filename="images/background2.webp") }}') no-repeat center center;
+            background-size: cover;
+            border-radius: 10px;
+        }
+
+        .queue-section .view-details {
+            text-decoration: none;
+            background-color: #3498DB;
             color: white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            position: relative;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s;
         }
 
-        .header img {
-            max-width: 80px; /* Increased logo size */
-            margin-left: 10px;
+        .queue-section .view-details:hover {
+            background-color: #2980B9;
         }
 
-        .header-title {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2em;
-            font-weight: bold;
+        /* Footer */
+        .footer {
+            background-color: #2C3E50;
+            color: white;
             text-align: center;
-        }
-
-        /* Content Section */
-        .content {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 20px;
-        }
-
-        .task-group {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .task-item {
-            background: white;
-            border-left: 8px solid transparent;
-            border-radius: 6px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            transition: border-left-color 0.3s, transform 0.2s;
-            cursor: pointer;
-        }
-
-        .task-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .task-item h2 {
-            margin: 0;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #2c5282;
-        }
-
-        .task-item p {
-            margin: 5px 0 0;
-            font-size: 1em;
-            color: #555;
-        }
-
-        /* Priority Styles */
-        .high-priority {
-            border-left-color: #e53e3e;
-        }
-
-        .medium-priority {
-            border-left-color: #dd6b20;
-        }
-
-        .low-priority {
-            border-left-color: #48bb78;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header-title {
-                font-size: 1.5em;
-            }
-
-            .task-item {
-                padding: 15px;
-            }
-
-            .task-item h2 {
-                font-size: 1.3em;
-            }
-
-            .task-item p {
-                font-size: 0.9em;
-            }
+            padding: 15px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <img src="/static/images/logo4.png" alt="Admin Logo">
-        <div class="header-title">Admin Dashboard</div>
-    </div>
 
-    <!-- Dashboard Content -->
-    <div class="content">
-        <div class="task-group">
-            <div class="task-item high-priority" onclick="window.location='{{ url_for('admin_queue', queue='red') }}'">
-                <h2>High Priority Tasks</h2>
-                <p>Critical tasks requiring immediate attention</p>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo4.png') }}" alt="Logo">
+        </div>
+        <div class="title">Admin Dashboard</div>
+        <a href="{{ url_for('admin_logout') }}" class="logout-link">Logout</a>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="left-section">
+            <!-- Red Priority Queue (larger section) -->
+            <div class="queue-section larger">
+                <h2><span class="priority-indicator priority-red"></span> High Priority</h2>
+                <p>{{ red_count }} Users</p>
+                <a href="{{ url_for('admin_queue', queue='Red') }}" class="view-details">View Details</a>
             </div>
-            <div class="task-item medium-priority" onclick="window.location='{{ url_for('admin_queue', queue='yellow') }}'">
-                <h2>Medium Priority Tasks</h2>
-                <p>Important tasks to ensure steady workflow</p>
+
+            <!-- Yellow Priority Queue -->
+            <div class="queue-section">
+                <h2><span class="priority-indicator priority-yellow"></span> Medium Priority</h2>
+                <p>{{ yellow_count }} Users</p>
+                <a href="{{ url_for('admin_queue', queue='Yellow') }}" class="view-details">View Details</a>
             </div>
-            <div class="task-item low-priority" onclick="window.location='{{ url_for('admin_queue', queue='green') }}'">
-                <h2>Low Priority Tasks</h2>
-                <p>Tasks with flexible deadlines</p>
+
+            <!-- Green Priority Queue (smaller section) -->
+            <div class="queue-section">
+                <h2><span class="priority-indicator priority-green"></span> Low Priority</h2>
+                <p>{{ green_count }} Users</p>
+                <a href="{{ url_for('admin_queue', queue='Green') }}" class="view-details">View Details</a>
             </div>
         </div>
+
+        <!-- Right Section (Background Image) -->
+        <div class="right-section">
+            <!-- Background image applied here -->
+        </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        &copy; 2024 Admin Dashboard. All rights reserved.
+    </footer>
+
 </body>
 </html>
