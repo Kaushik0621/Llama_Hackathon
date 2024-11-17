@@ -1,0 +1,48 @@
+{
+    "transcript": [
+        {
+            "role": "assistant",
+            "content": "Good afternoon. LAMA GP surgery. How can I assist you today?"
+        },
+        {
+            "role": "user",
+            "content": "Hi, I need assistance with dietary advice."
+        },
+        {
+            "role": "assistant",
+            "content": "Can you confirm your name and date of birth for identity verification?"
+        },
+        {
+            "role": "user",
+            "content": "My name is Brent Peterson and I was born on March 31, 1953."
+        },
+        {
+            "role": "assistant",
+            "content": "Thank you, Brent Peterson. I've located your records. Let me assist you with your request."
+        },
+        {
+            "role": "user",
+            "content": "Sure, what options do I have?"
+        },
+        {
+            "role": "assistant",
+            "content": "For your dietary advice, we can schedule a routine appointment. Does next week work for you?"
+        },
+        {
+            "role": "user",
+            "content": "Yes, next week is fine."
+        },
+        {
+            "role": "assistant",
+            "content": "I have a slot available on Monday at 11 AM with Dr. Lee. Does that work?"
+        },
+        {
+            "role": "user",
+            "content": "Yes, that works for me."
+        },
+        {
+            "role": "assistant",
+            "content": "You're now booked with Dr. Lee on Monday at 11 AM. See you then!"
+        }
+    ]
+}

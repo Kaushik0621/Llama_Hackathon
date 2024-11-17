@@ -1,0 +1,40 @@
+{
+    "transcript": [
+        {
+            "role": "assistant",
+            "content": "Good afternoon. LAMA GP surgery. How can I assist you in your emergency?"
+        },
+        {
+            "role": "user",
+            "content": "Hi, I need urgent help. I am experiencing loss of consciousness."
+        },
+        {
+            "role": "assistant",
+            "content": "Can you confirm your name and date of birth for identity verification?"
+        },
+        {
+            "role": "user",
+            "content": "My name is Bryan Navarro and I was born on October 12, 1991."
+        },
+        {
+            "role": "assistant",
+            "content": "Thank you, Bryan Navarro. I've located your records. Let me assist you immediately."
+        },
+        {
+            "role": "user",
+            "content": "What should I do now?"
+        },
+        {
+            "role": "assistant",
+            "content": "Please stay calm. I am arranging an ambulance for your loss of consciousness. Is there someone with you?"
+        },
+        {
+            "role": "user",
+            "content": "Yes, I have someone here."
+        },
+        {
+            "role": "assistant",
+            "content": "Good. Ensure they keep you comfortable. The ambulance will arrive shortly. Please stay on the line for any updates."
+        }
+    ]
+}

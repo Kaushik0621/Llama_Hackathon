@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Users</title>
+</head>
+<body>
+    <h1>All Users</h1>
+    <table border="1" width="100%">
+        <tr>
+            <th>User ID</th>
+            <th>Risk Level</th>
+            <th>Details</th>
+        </tr>
+        {% for user in user_data %}
+        <tr>
+            <td>{{ user.user_id }}</td>
+            <td>{{ user.risk_level }}</td>
+            <td><a href="{{ url_for('admin_user_detail', user_id=user.user_id) }}">View Details</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

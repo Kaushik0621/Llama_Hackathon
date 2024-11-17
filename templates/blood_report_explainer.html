@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Report Explainer</title>
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: #F9FAFB; /* Light background */
+        }
+
+        /* Left Navigation Bar */
+        .navbar {
+            width: 240px;
+            color: white;
+            padding-top: 20px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-y: auto;
+            z-index: 1;
+            background: linear-gradient(300deg, #2b6cb0, #3182ce, #63b3ed); /* Gradient from dark blue to light blue */
+            overflow-x: hidden; /* Ensures no horizontal overflow */
+        }
+
+        /* Logo inside navbar */
+        .navbar .logo {
+            width: 80%;
+            margin-bottom: 20px;
+            max-width: 100%;
+        }
+
+        .navbar img {
+            width: 100%;
+            max-height: 140px;
+            object-fit: contain;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            width: 80%;
+            text-align: center;
+            padding: 12px;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .navbar a:hover,
+        .navbar a.selected {
+            background-color: #2563EB; /* Highlight color when selected or hovered */
+        }
+
+        /* Main Content Area */
+        .container {
+            margin-left: 260px; /* Space for the left navbar */
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            gap: 30px;
+        }
+
+        /* Chatbot Container */
+        .chat-container {
+            width: 60%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Section */
+        .header {
+            background-color: #3B82F6;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .chat-box .message {
+            margin-bottom: 15px;
+        }
+
+        .chat-box .user {
+            text-align: right;
+            color: #3B82F6;
+            font-weight: bold;
+        }
+
+        .chat-box .assistant {
+            text-align: left;
+            color: #10B981;
+            font-weight: bold;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background-color: #fff;
+            gap: 10px;
+        }
+
+        .input-area input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .input-area button {
+            padding: 10px 20px;
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .input-area button:hover {
+            background-color: #2563EB;
+        }
+
+        /* Blood Test Centers Section */
+        .test-centers {
+            width: 35%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            height: 84vh;
+            overflow-y: auto;
+        }
+
+        .test-centers h3 {
+            color: #3B82F6;
+            margin-bottom: 20px;
+        }
+
+        .test-center-item {
+            margin-bottom: 15px;
+            background-color: #F1F5F9;
+            padding: 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .test-center-item:hover {
+            background-color: #E2E8F0;
+        }
+
+        .test-center-item .name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .test-center-item .details {
+            font-size: 16px;
+            color: #333;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Left Navigation Bar -->
+    <div class="navbar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo4.png') }}" alt="Logo">
+        </div>
+        <div class="user-greeting">
+            Welcome, {{ current_user.name }} <!-- User's name -->
+        </div>
+        <a href="{{ url_for('base') }}">Home</a>
+        <a href="{{ url_for('chat') }}">Go to Chat</a>
+        <a href="{{ url_for('dietitian') }}">Dietitian</a>
+        <a href="{{ url_for('blood_report_explainer') }}" class="selected">Blood Report Explainer</a> <!-- Highlighted -->
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="container">
+
+        <!-- Blood Report Explainer Chatbot -->
+        <div class="chat-container">
+            <div class="header">Blood Report Explainer Chatbot</div>
+            <div class="chat-box" id="chatBox"></div>
+
+            <!-- Chat Input Area -->
+            <form id="chatForm" class="input-area" onsubmit="sendMessage(event)">
+                <input type="text" id="userInput" placeholder="Ask about a blood test parameter..." required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+
+        <!-- Blood Test Centers Section -->
+        <div class="test-centers">
+            <h3>Nearby Blood Test Centers</h3>
+
+            <div class="test-center-item">
+                <div class="name">City Lab Diagnostics</div>
+                <div class="details">Phone: +123 456 7890 | Address: 123 Health St., City Center</div>
+            </div>
+
+            <div class="test-center-item">
+                <div class="name">Rapid Blood Test Center</div>
+                <div class="details">Phone: +123 456 7891 | Address: 456 Wellness Blvd., Downtown</div>
+            </div>
+
+            <div class="test-center-item">
+                <div class="name">LifeCare Pathology</div>
+                <div class="details">Phone: +123 456 7892 | Address: 789 Medical Lane, West End</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        async function sendMessage(event) {
+            event.preventDefault();
+
+            const input = document.getElementById("userInput");
+            const chatBox = document.getElementById("chatBox");
+
+            // Append user message to the chat box
+            const userMessage = document.createElement("div");
+            userMessage.classList.add("message", "user");
+            userMessage.textContent = `You: ${input.value}`;
+            chatBox.appendChild(userMessage);
+
+            // Scroll to the bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Send message to the server
+            const response = await fetch("{{ url_for('blood_report_explainer') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `message=${encodeURIComponent(input.value)}`,
+            });
+
+            const data = await response.json();
+
+            // Append assistant reply to the chat box
+            const assistantMessage = document.createElement("div");
+            assistantMessage.classList.add("message", "assistant");
+            assistantMessage.textContent = `Assistant: ${data.reply}`;
+            chatBox.appendChild(assistantMessage);
+
+            // Clear input field
+            input.value = "";
+
+            // Scroll to the bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+
+</body>
+</html>

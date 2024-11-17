@@ -1,11 +1,152 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Assistant</title>
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(270deg, #4F46E5, #3B82F6, #10B981, #EAB308); /* Gradient with color waves */
+            background-size: 400% 400%;
+            animation: waveBackground 6s ease-in-out infinite;
+            text-align: center;
+        }
+
+        /* Keyframes for background wave animation */
+        @keyframes waveBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.85); /* More transparent background */
+            border-radius: 15px;
+            box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        /* Logo Section */
+        .logo img {
+            width: 100%;
+            max-width: 300px; /* Increased logo size */
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #3B82F6;
+            margin-bottom: 20px;
+        }
+
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Button Styling */
+        .button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            background-color: #3B82F6;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            transition: background-color 0.3s ease;
+            text-align: center;
+        }
+
+        .button:hover {
+            background-color: #2563EB;
+        }
+
+        /* Option Links */
+        .option {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #3B82F6;
+            font-weight: bold;
+        }
+
+        .option a {
+            text-decoration: none;
+            color: #3B82F6;
+        }
+
+        .option a:hover {
+            text-decoration: underline;
+        }
+
+        /* Styling for Form Elements */
+        input[type="text"], input[type="password"], input[type="email"], input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.7); /* Slightly transparent inputs */
+        }
+
+        input[type="submit"] {
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2563EB;
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Medical Assistant App</h1>
-    <a href="{{ url_for('signup') }}">Sign Up</a> |
-    <a href="{{ url_for('login') }}">Login</a>
+
+    <div class="container">
+        <!-- Logo Section -->
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo4.png') }}" alt="Logo">
+        </div>
+        
+        <!-- Heading -->
+        <h1>Welcome to the Medical Assistant App</h1>
+
+        <!-- Form for Login/Signup -->
+        <form>
+            <a href="{{ url_for('signup') }}" class="button">Sign Up</a>
+            <a href="{{ url_for('login') }}" class="button">Login</a>
+        </form>
+
+        <!-- Option Links -->
+        <div class="option">
+            <a href="{{ url_for('signup') }}">Create an Account</a>
+            <a href="{{ url_for('login') }}">Already Have an Account?</a>
+        </div>
+    </div>
+
 </body>
 </html>

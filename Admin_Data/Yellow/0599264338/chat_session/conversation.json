@@ -1,0 +1,48 @@
+{
+    "transcript": [
+        {
+            "role": "assistant",
+            "content": "Good afternoon. LAMA GP surgery. How can I assist you today?"
+        },
+        {
+            "role": "user",
+            "content": "Hi, I need help with urinary discomfort."
+        },
+        {
+            "role": "assistant",
+            "content": "Can you confirm your name and date of birth for identity verification?"
+        },
+        {
+            "role": "user",
+            "content": "My name is Pamela Edwards and I was born on November 30, 2004."
+        },
+        {
+            "role": "assistant",
+            "content": "Thank you, Pamela Edwards. I've located your records. How long have you been experiencing urinary discomfort?"
+        },
+        {
+            "role": "user",
+            "content": "It's been a few days now."
+        },
+        {
+            "role": "assistant",
+            "content": "Let me arrange an appointment to address your urinary discomfort. Would you prefer today or tomorrow?"
+        },
+        {
+            "role": "user",
+            "content": "Tomorrow would work better for me."
+        },
+        {
+            "role": "assistant",
+            "content": "Great, I have a 10 AM slot with Dr. Patel tomorrow. Does that work for you?"
+        },
+        {
+            "role": "user",
+            "content": "Yes, that works."
+        },
+        {
+            "role": "assistant",
+            "content": "You're now booked with Dr. Patel at 10 AM tomorrow. See you then!"
+        }
+    ]
+}

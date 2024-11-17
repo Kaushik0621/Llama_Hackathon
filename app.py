@@ -4,6 +4,8 @@ from utils.user_auth import User, authenticate_user, register_user, get_user_by_
 from utils.folder_manager import create_user_folder
 from utils.risk_assessment import assess_risk
 from utils.chat_handler import handle_chat
+from utils.dietitian_chat import handle_dietitian_chat
+from utils.blood_report_explainer import handle_blood_report_query
 import os
 
 # Load environment variables
@@ -43,12 +45,13 @@ def signup():
         # Register the user
         success = register_user(name, email_id, phone_no, password, age, gender)
         if success:
-            identifier = email_id if email_id else phone_no
-            create_user_folder(identifier)
+            # Create a single folder for the user
+            create_user_folder(email_id, phone_no)
             return redirect(url_for('login'))
         else:
             return "User already exists or error in registration."
     return render_template('signup.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -81,7 +84,39 @@ def logout():
 def base():
     return render_template('base.html')  # Base page with "Go to Chat" link
 
-# Sequential Question Handling
+@app.route('/dietitian', methods=['GET', 'POST'])
+@login_required
+def dietitian():
+    if request.method == 'POST':
+        user_input = request.form.get("message")
+        if not user_input.strip():
+            return jsonify({"reply": "Please ask a relevant question about diet."})
+
+        # Pass both email and phone to the function
+        assistant_reply = handle_dietitian_chat(user_input, current_user.email_id, current_user.phone_no)
+        return jsonify({"reply": assistant_reply})
+
+    return render_template('dietitian.html')
+
+
+from utils.folder_manager import save_uploaded_document
+
+@app.route('/blood_report_explainer', methods=['GET', 'POST'])
+@login_required
+def blood_report_explainer():
+    if request.method == 'POST':
+        user_input = request.form.get("message")
+        if user_input:
+            # Pass both email and phone to the function
+            assistant_reply = handle_blood_report_query(user_input, current_user.email_id, current_user.phone_no)
+            return jsonify({"reply": assistant_reply})
+
+    return render_template('blood_report_explainer.html')
+
+
+# Blood report explainer page template
+
+# Chat Routes
 @app.route('/chat', methods=['GET', 'POST'])
 @login_required
 def chat():
@@ -176,39 +211,6 @@ def chat():
     return render_template("question.html", question=question)
 
 # Chat result and agent handling
-# @app.route('/chat_result', methods=['GET', 'POST'])
-# @login_required
-# def chat_result():
-#     risk_level = session.get("risk_level")
-
-#     if not risk_level:
-#         # Redirect to `/chat` if questions are not completed
-#         return redirect(url_for("chat"))
-
-#     if risk_level == "Red":
-#         return render_template(
-#             "chat_result.html", 
-#             risk_level=risk_level, 
-#             message="You are getting a call now. Immediate assistance is being arranged."
-#         )
-
-#     # Show appropriate chat agent interface
-#     if request.method == "POST":
-#         user_input = request.form.get("message")
-#         if not user_input:
-#             return jsonify({"reply": "User input is missing."})
-
-#         user_data = {
-#             "Email_id": current_user.email_id,
-#             "Phone_No": current_user.phone_no
-#         }
-
-#         # Call the handle_chat function
-#         assistant_reply, folder_path = handle_chat(user_input, user_data, risk_level)
-#         return jsonify({"reply": assistant_reply})
-
-#     # Render the chat interface
-#     return render_template("chat.html", risk_level=risk_level)
 @app.route('/chat_result', methods=['GET', 'POST'])
 @login_required
 def chat_result():
@@ -242,7 +244,6 @@ def chat_result():
 
     # Render the chat interface
     return render_template("chat_result.html", risk_level=risk_level)
-
 
 # Reset Chat
 @app.route('/reset_chat', methods=['POST', 'GET'])

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #f0f4f8, #d9e2ec);
+            color: #333;
+        }
+
+        /* Header Section */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #6c91c2; /* Lighter blue shade */
+            padding: 10px 20px;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .header img {
+            max-width: 80px; /* Increased logo size */
+            margin-left: 10px;
+        }
+
+        .header-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Content Section */
+        .content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .task-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .task-item {
+            background: white;
+            border-left: 8px solid transparent;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: border-left-color 0.3s, transform 0.2s;
+            cursor: pointer;
+        }
+
+        .task-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .task-item h2 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c5282;
+        }
+
+        .task-item p {
+            margin: 5px 0 0;
+            font-size: 1em;
+            color: #555;
+        }
+
+        /* Priority Styles */
+        .high-priority {
+            border-left-color: #e53e3e;
+        }
+
+        .medium-priority {
+            border-left-color: #dd6b20;
+        }
+
+        .low-priority {
+            border-left-color: #48bb78;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 1.5em;
+            }
+
+            .task-item {
+                padding: 15px;
+            }
+
+            .task-item h2 {
+                font-size: 1.3em;
+            }
+
+            .task-item p {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <img src="/static/images/logo4.png" alt="Admin Logo">
+        <div class="header-title">Admin Dashboard</div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="content">
+        <div class="task-group">
+            <div class="task-item high-priority" onclick="window.location='{{ url_for('admin_queue', queue='red') }}'">
+                <h2>High Priority Tasks</h2>
+                <p>Critical tasks requiring immediate attention</p>
+            </div>
+            <div class="task-item medium-priority" onclick="window.location='{{ url_for('admin_queue', queue='yellow') }}'">
+                <h2>Medium Priority Tasks</h2>
+                <p>Important tasks to ensure steady workflow</p>
+            </div>
+            <div class="task-item low-priority" onclick="window.location='{{ url_for('admin_queue', queue='green') }}'">
+                <h2>Low Priority Tasks</h2>
+                <p>Tasks with flexible deadlines</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

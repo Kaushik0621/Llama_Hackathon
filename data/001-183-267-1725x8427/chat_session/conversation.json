@@ -1,0 +1,48 @@
+{
+    "transcript": [
+        {
+            "role": "assistant",
+            "content": "Good afternoon. LAMA GP surgery. How can I help you today?"
+        },
+        {
+            "role": "user",
+            "content": "Hi, I need help with a of issue."
+        },
+        {
+            "role": "assistant",
+            "content": "To verify your identity, please provide your full name and date of birth."
+        },
+        {
+            "role": "user",
+            "content": "My name is Julie Roberson and I was born on November 15, 1941."
+        },
+        {
+            "role": "assistant",
+            "content": "Thank you, Julie Roberson. I've located your records. How can we assist you today?"
+        },
+        {
+            "role": "user",
+            "content": "I have been dealing with of for a few days."
+        },
+        {
+            "role": "assistant",
+            "content": "Let me schedule an appointment to address your of."
+        },
+        {
+            "role": "user",
+            "content": "Thank you, when is the earliest slot available?"
+        },
+        {
+            "role": "assistant",
+            "content": "I have an opening with Dr. Patel at 2 PM tomorrow. Does that work for you?"
+        },
+        {
+            "role": "user",
+            "content": "Yes, that works for me."
+        },
+        {
+            "role": "assistant",
+            "content": "Great, you're now booked with Dr. Patel at 2 PM tomorrow. See you then!"
+        }
+    ]
+}
