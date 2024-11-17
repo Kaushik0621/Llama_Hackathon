@@ -79,6 +79,7 @@
 
 <script>
     let lastCheck = 0;  // Track last check time
+    let checkTimeout = null;  // For debouncing
 
     function createNotificationElement(notification) {
         const div = document.createElement('div');
@@ -103,8 +104,20 @@
         return div;
     }
 
+    // Add debounced check function
+    function debouncedCheck() {
+        if (checkTimeout) clearTimeout(checkTimeout);
+        checkTimeout = setTimeout(checkNotifications, 300);  // 300ms delay
+    }
+
+    // Modify the existing checkNotifications function to prevent duplicate checks
     async function checkNotifications() {
+        const now = Date.now();
+        // Prevent checking more often than every 2 seconds
+        if (now - lastCheck < 2000) return;
+        
         try {
+            lastCheck = now;
             const response = await fetch('/admin/check-notifications');
             const notifications = await response.json();
             
@@ -128,6 +141,9 @@
             console.error('Error checking notifications:', error);
         }
     }
+
+    // Add event listener for custom event
+    document.addEventListener('checkNotifications', debouncedCheck);
 
     // Initialize notifications
     document.addEventListener('DOMContentLoaded', () => {

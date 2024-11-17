@@ -182,10 +182,9 @@ def create_user_webhook():
     with open(user_path / "user_info.json", "w") as f:
         json.dump(user_info, f, indent=2)
     
-    return jsonify({
-        "message": "User created successfully",
-        "user_id": user_id
-    }), 201
+    response = jsonify({"status": "success"})
+    response.headers['X-Check-Notifications'] = 'true'
+    return response
 
 @app2.route('/admin/check-notifications')
 def check_notifications():
