@@ -110,6 +110,32 @@
                 font-size: 0.9em;
             }
         }
+
+        .notifications {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .notification {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -118,6 +144,19 @@
         <img src="/static/images/logo4.png" alt="Admin Logo">
         <div class="header-title">Admin Dashboard</div>
     </div>
+
+    <!-- Notifications Section -->
+    {% if notifications %}
+    <div class="notifications">
+        {% for notification in notifications %}
+        <div class="notification {% if 'red' in notification.message.lower() %}high-priority
+                               {% elif 'yellow' in notification.message.lower() %}medium-priority
+                               {% else %}low-priority{% endif %}">
+            {{ notification.message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <!-- Dashboard Content -->
     <div class="content">

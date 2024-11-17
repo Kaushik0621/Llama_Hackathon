@@ -77,7 +77,10 @@ def admin_login():
 def admin_dashboard():
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
-    return render_template('admin_dashboard.html')
+    
+    # Get and clear notifications
+    notifications = session.pop('notifications', [])
+    return render_template('admin_dashboard.html', notifications=notifications)
 
 @app2.route('/admin/users')
 def admin_users():
@@ -175,6 +178,14 @@ def create_user_webhook():
         
         with open(chat_session_path / "conversation.json", 'w') as f:
             json.dump(initial_conversation, f, indent=4)
+        
+        # Add notification to session
+        if 'notifications' not in session:
+            session['notifications'] = []
+        session['notifications'].append({
+            'type': 'new_user',
+            'message': f"New {data['risk_level']} risk patient created: {data['patient_name']}"
+        })
         
         return jsonify({
             "message": "User folder structure created successfully",
