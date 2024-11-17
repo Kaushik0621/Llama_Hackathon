@@ -175,5 +175,52 @@
             </div>
         </div>
     </div>
+
+    <!-- Add this JavaScript before the closing </body> tag -->
+    <script>
+        function createNotificationElement(notification) {
+            const div = document.createElement('div');
+            div.className = `notification ${
+                notification.message.toLowerCase().includes('red') ? 'high-priority' :
+                notification.message.toLowerCase().includes('yellow') ? 'medium-priority' :
+                'low-priority'
+            }`;
+            div.textContent = notification.message;
+            return div;
+        }
+
+        function checkNotifications() {
+            fetch('/admin/check-notifications')
+                .then(response => response.json())
+                .then(notifications => {
+                    if (notifications.length > 0) {
+                        const container = document.querySelector('.notifications') || (() => {
+                            const div = document.createElement('div');
+                            div.className = 'notifications';
+                            document.querySelector('.content').insertBefore(div, document.querySelector('.content').firstChild);
+                            return div;
+                        })();
+
+                        notifications.forEach(notification => {
+                            const notificationElement = createNotificationElement(notification);
+                            container.appendChild(notificationElement);
+                            
+                            // Optional: Remove notification after 5 seconds
+                            setTimeout(() => {
+                                notificationElement.style.opacity = '0';
+                                setTimeout(() => notificationElement.remove(), 500);
+                            }, 5000);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error checking notifications:', error));
+        }
+
+        // Check for notifications every 5 seconds
+        setInterval(checkNotifications, 5000);
+        
+        // Also check immediately when page loads
+        checkNotifications();
+    </script>
 </body>
 </html>

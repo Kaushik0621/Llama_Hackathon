@@ -2,11 +2,13 @@ from flask import Flask, render_template, request, session, redirect, url_for, j
 import os
 import json
 from pathlib import Path
+from datetime import datetime
 
 # Configuration
 ADMIN_USERNAME = "ADMIN"
 ADMIN_PASSWORD = "Admin@123"
 UPLOAD_FOLDER = "data"
+NOTIFICATIONS_FILE = os.path.join(UPLOAD_FOLDER, "notifications.json")
 
 app2 = Flask(__name__)
 app2.secret_key = os.getenv("ADMIN_SECRET_KEY", "default_admin_secret_key")
@@ -54,6 +56,28 @@ def load_user_data():
 
     return user_data
 
+def save_notification(notification):
+    """Save a notification to the notifications file"""
+    try:
+        # Create notifications directory if it doesn't exist
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+        
+        # Load existing notifications
+        notifications = []
+        if os.path.exists(NOTIFICATIONS_FILE):
+            with open(NOTIFICATIONS_FILE, 'r') as f:
+                notifications = json.load(f)
+        
+        # Add timestamp to notification
+        notification['timestamp'] = datetime.now().isoformat()
+        notifications.append(notification)
+        print("notifications", notifications)
+        # Save back to file
+        with open(NOTIFICATIONS_FILE, 'w') as f:
+            json.dump(notifications, f, indent=4)
+    except Exception as e:
+        print(f"Error saving notification: {e}")
+
 @app2.route('/')
 def admin_index():
     if not session.get('admin'):
@@ -78,8 +102,15 @@ def admin_dashboard():
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
     
-    # Get and clear notifications
-    notifications = session.pop('notifications', [])
+    # Load notifications from file
+    notifications = []
+    if os.path.exists(NOTIFICATIONS_FILE):
+        with open(NOTIFICATIONS_FILE, 'r') as f:
+            notifications = json.load(f)
+        # Clear the notifications file after reading
+        with open(NOTIFICATIONS_FILE, 'w') as f:
+            json.dump([], f)
+    
     return render_template('admin_dashboard.html', notifications=notifications)
 
 @app2.route('/admin/users')
@@ -179,10 +210,8 @@ def create_user_webhook():
         with open(chat_session_path / "conversation.json", 'w') as f:
             json.dump(initial_conversation, f, indent=4)
         
-        # Add notification to session
-        if 'notifications' not in session:
-            session['notifications'] = []
-        session['notifications'].append({
+        # Replace session notification with file-based notification
+        save_notification({
             'type': 'new_user',
             'message': f"New {data['risk_level']} risk patient created: {data['patient_name']}"
         })
@@ -194,6 +223,22 @@ def create_user_webhook():
         
     except Exception as e:
         return jsonify({"error": f"Failed to create user structure: {str(e)}"}), 500
+
+# Add a new route to check for notifications
+@app2.route('/admin/check-notifications')
+def check_notifications():
+    if not session.get('admin'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    notifications = []
+    if os.path.exists(NOTIFICATIONS_FILE):
+        with open(NOTIFICATIONS_FILE, 'r') as f:
+            notifications = json.load(f)
+        # Clear the notifications file after reading
+        with open(NOTIFICATIONS_FILE, 'w') as f:
+            json.dump([], f)
+    
+    return jsonify(notifications)
 
 if __name__ == '__main__':
     app2.run(port=5001, debug=True)
