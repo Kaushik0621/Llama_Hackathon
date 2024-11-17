@@ -191,9 +191,53 @@
             width: 100%;
             font-size: 14px;
         }
+
+        .notifications {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .notification {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .notification.high-priority {
+            background-color: #E74C3C;
+        }
+
+        .notification.medium-priority {
+            background-color: #F1C40F;
+        }
+
+        .notification.low-priority {
+            background-color: #27AE60;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Add this right after <body> -->
+    <div id="notifications-container" class="notifications">
+        <!-- Initial notifications from Flask -->
+        {% if initial_notifications %}
+            {% for notification in initial_notifications %}
+            <div class="notification {% if notification.type == 'red' %}high-priority
+                                   {% elif notification.type == 'yellow' %}medium-priority
+                                   {% else %}low-priority{% endif %}">
+                {{ notification.message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
 
     <!-- Header -->
     <header class="header">
@@ -253,8 +297,8 @@
         function createNotificationElement(notification) {
             const div = document.createElement('div');
             div.className = `notification ${
-                notification.message.toLowerCase().includes('red') ? 'high-priority' :
-                notification.message.toLowerCase().includes('yellow') ? 'medium-priority' :
+                notification.type === 'red' ? 'high-priority' :
+                notification.type === 'yellow' ? 'medium-priority' :
                 'low-priority'
             }`;
             div.textContent = notification.message;
@@ -265,34 +309,36 @@
             fetch('/admin/check-notifications')
                 .then(response => response.json())
                 .then(notifications => {
-                    if (notifications.length > 0) {
-                        const container = document.querySelector('.notifications') || (() => {
-                            const div = document.createElement('div');
-                            div.className = 'notifications';
-                            document.querySelector('.content').insertBefore(div, document.querySelector('.content').firstChild);
-                            return div;
-                        })();
-
-                        notifications.forEach(notification => {
-                            const notificationElement = createNotificationElement(notification);
-                            container.appendChild(notificationElement);
-                            
-                            // Optional: Remove notification after 5 seconds
+                    const container = document.getElementById('notifications-container');
+                    
+                    // Clear existing notifications
+                    container.innerHTML = '';
+                    
+                    notifications.forEach(notification => {
+                        const notificationElement = createNotificationElement(notification);
+                        container.appendChild(notificationElement);
+                        
+                        // Remove notification after 5 seconds
+                        setTimeout(() => {
+                            notificationElement.style.opacity = '0';
                             setTimeout(() => {
-                                notificationElement.style.opacity = '0';
-                                setTimeout(() => notificationElement.remove(), 500);
-                            }, 5000);
-                        });
-                    }
+                                if (notificationElement.parentNode === container) {
+                                    container.removeChild(notificationElement);
+                                }
+                            }, 500);
+                        }, 5000);
+                    });
                 })
                 .catch(error => console.error('Error checking notifications:', error));
         }
 
-        // Check for notifications every 5 seconds
-        setInterval(checkNotifications, 5000);
+        // Check for notifications every 30 seconds
+        setInterval(checkNotifications, 30000);
         
         // Also check immediately when page loads
-        checkNotifications();
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkNotifications, 5000); // First check after 5 seconds
+        });
     </script>
 
     <!-- Footer -->

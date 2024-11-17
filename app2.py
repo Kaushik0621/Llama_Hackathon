@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify, send_from_directory
 import os
 from pathlib import Path
-from datetime import datetime
 import json
+from datetime import datetime
+from werkzeug.utils import secure_filename
 
 # Configuration
 ADMIN_USERNAME = "ADMIN"
 ADMIN_PASSWORD = "Admin@123"
 UPLOAD_FOLDER = "Admin_Data"  # Your folder structure
-NOTIFICATIONS_FILE = os.path.join(UPLOAD_FOLDER, "notifications.json")
 
 app2 = Flask(__name__)
 app2.secret_key = os.getenv("ADMIN_SECRET_KEY", "default_admin_secret_key")
@@ -47,49 +47,23 @@ def load_user_data():
                             chat_data = json.load(f)
                         chat_sessions.append(chat_data)
 
-        # Load uploaded documents
-        docs_dir = user_folder / "DOCS"
-        if docs_dir.exists():
-            user_docs = [str(doc) for doc in docs_dir.glob("*")]
+                # Count users in each category
+                if priority == "Red":
+                    red_count += 1
+                elif priority == "Yellow":
+                    yellow_count += 1
+                elif priority == "Green":
+                    green_count += 1
 
-        # Determine risk level from the user's folder name or data (dummy logic)
-        if "red" in user_folder.name.lower():
-            risk_level = "Red"
-        elif "yellow" in user_folder.name.lower():
-            risk_level = "Yellow"
-        elif "green" in user_folder.name.lower():
-            risk_level = "Green"
-
-        user_data.append({
-            "user_id": user_folder.name,
-            "chats": user_chats,
-            "docs": user_docs,
-            "risk_level": risk_level
-        })
+                # Append user data
+                user_data.append({
+                    "user_id": user_folder.name,
+                    "user_info": user_info,
+                    "risk_level": priority,
+                    "chats": chat_sessions
+                })
 
     return user_data, red_count, yellow_count, green_count
-
-def save_notification(notification):
-    """Save a notification to the notifications file"""
-    try:
-        # Create notifications directory if it doesn't exist
-        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-        
-        # Load existing notifications
-        notifications = []
-        if os.path.exists(NOTIFICATIONS_FILE):
-            with open(NOTIFICATIONS_FILE, 'r') as f:
-                notifications = json.load(f)
-        
-        # Add timestamp to notification
-        notification['timestamp'] = datetime.now().isoformat()
-        notifications.append(notification)
-        print("notifications", notifications)
-        # Save back to file
-        with open(NOTIFICATIONS_FILE, 'w') as f:
-            json.dump(notifications, f, indent=4)
-    except Exception as e:
-        print(f"Error saving notification: {e}")
 
 @app2.route('/')
 def admin_index():
@@ -118,11 +92,25 @@ def admin_dashboard():
     # Get the user data and counts
     user_data, red_count, yellow_count, green_count = load_user_data()
 
+    # Get initial notifications
+    initial_notifications = []
+    if red_count > 0:
+        initial_notifications.append({
+            "message": f"You have {red_count} high priority users requiring attention!",
+            "type": "red"
+        })
+    if yellow_count > 0:
+        initial_notifications.append({
+            "message": f"{yellow_count} users in medium priority queue",
+            "type": "yellow"
+        })
+
     # Pass the data to the template
     return render_template('admin_dashboard.html', 
-                           red_count=red_count, 
-                           yellow_count=yellow_count, 
-                           green_count=green_count)
+                         red_count=red_count, 
+                         yellow_count=yellow_count, 
+                         green_count=green_count,
+                         initial_notifications=initial_notifications)
 
 @app2.route('/admin/queue/<queue>')
 def admin_queue(queue):
@@ -168,74 +156,58 @@ def create_user_webhook():
     # Validate required fields
     required_fields = ['phone_number', 'patient_name', 'date_of_birth', 
                       'medical_conditions', 'summary', 'risk_level']
-    
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Missing required fields"}), 400
     
-    # Create base folder path
-    phone_number = data['phone_number'].replace('+', '')  # Remove + from phone number
-    risk_folder = data['risk_level'].capitalize()
-    base_path = Path(UPLOAD_FOLDER) / risk_folder / phone_number
+    # Create user directory structure
+    risk_level = data['risk_level'].capitalize()
+    user_id = secure_filename(data['phone_number'])
+    user_path = Path(UPLOAD_FOLDER) / risk_level / user_id
     
-    try:
-        # Create main user directory
-        base_path.mkdir(parents=True, exist_ok=True)
-        
-        # Create chat session directory
-        chat_session_path = base_path / "chat_session"
-        chat_session_path.mkdir(exist_ok=True)
-        
-        # Create DOCS directory
-        docs_path = base_path / "DOCS"
-        docs_path.mkdir(exist_ok=True)
-        
-        # Create user_info.json
-        user_info = {
-            "Patient Name": data['patient_name'],
-            "Date of Birth": data['date_of_birth'],
-            "Phone Number": data['phone_number'],
-            "Previous Medical Conditions": data['medical_conditions'],
-            "Summary": data['summary']
-        }
-        
-        with open(base_path / "user_info.json", 'w') as f:
-            json.dump(user_info, f, indent=4)
-        
-        # Create initial empty conversation.json
-        initial_conversation = {
-            "transcript": []
-        }
-        
-        with open(chat_session_path / "conversation.json", 'w') as f:
-            json.dump(initial_conversation, f, indent=4)
-        
-        # Replace session notification with file-based notification
-        save_notification({
-            'type': 'new_user',
-            'message': f"New {data['risk_level']} risk patient created: {data['patient_name']}"
-        })
-        
-        return jsonify({
-            "message": "User folder structure created successfully",
-            "path": str(base_path)
-        }), 201
-        
-    except Exception as e:
-        return jsonify({"error": f"Failed to create user structure: {str(e)}"}), 500
+    # Create directories if they don't exist
+    user_path.mkdir(parents=True, exist_ok=True)
+    (user_path / "chat_session").mkdir(exist_ok=True)
+    
+    # Save user info
+    user_info = {
+        "phone_number": data['phone_number'],
+        "patient_name": data['patient_name'],
+        "date_of_birth": data['date_of_birth'],
+        "medical_conditions": data['medical_conditions'],
+        "summary": data['summary'],
+        "risk_level": risk_level,
+        "created_at": datetime.now().isoformat()
+    }
+    
+    with open(user_path / "user_info.json", "w") as f:
+        json.dump(user_info, f, indent=2)
+    
+    return jsonify({
+        "message": "User created successfully",
+        "user_id": user_id
+    }), 201
 
-# Add a new route to check for notifications
 @app2.route('/admin/check-notifications')
 def check_notifications():
     if not session.get('admin'):
-        return jsonify({'error': 'Unauthorized'}), 401
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    # Load user data to check for new notifications
+    user_data, red_count, yellow_count, green_count = load_user_data()
     
     notifications = []
-    if os.path.exists(NOTIFICATIONS_FILE):
-        with open(NOTIFICATIONS_FILE, 'r') as f:
-            notifications = json.load(f)
-        # Clear the notifications file after reading
-        with open(NOTIFICATIONS_FILE, 'w') as f:
-            json.dump([], f)
+    
+    # Example notification logic - you can modify based on your needs
+    if red_count > 0:
+        notifications.append({
+            "message": f"You have {red_count} high priority users requiring attention!",
+            "type": "red"
+        })
+    if yellow_count > 0:
+        notifications.append({
+            "message": f"{yellow_count} users in medium priority queue",
+            "type": "yellow"
+        })
     
     return jsonify(notifications)
 

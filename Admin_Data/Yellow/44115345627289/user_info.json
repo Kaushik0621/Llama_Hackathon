@@ -1,0 +1,9 @@
+{
+  "phone_number": "+44115345627289",
+  "patient_name": "Jane Smith",
+  "date_of_birth": "March 15, 1985",
+  "medical_conditions": "Asthma",
+  "summary": "New patient registration with asthma history",
+  "risk_level": "Yellow",
+  "created_at": "2024-11-17T07:23:31.295655"
+}
