@@ -2,13 +2,13 @@ import requests
 import json
 
 # Webhook URL (assuming Flask is running locally on port 5001)
-# webhook_url = "http://localhost:5001/webhook/create_user"
-webhook_url = "https://llama-hackathon-heroku-ac0409d236cb.herokuapp.com/webhook/create_user"
+webhook_url = "http://localhost:5001/webhook/create_user"
+# webhook_url = "https://llama-hackathon-heroku-ac0409d236cb.herokuapp.com/webhook/create_user"
 
 
 # Sample user data matching the required fields
 test_data = {
-    "phone_number": "+441153456289",
+    "phone_number": "+44115345622289",
     "patient_name": "Jane Smith",
     "date_of_birth": "March 15, 1985",
     "medical_conditions": "Asthma",
