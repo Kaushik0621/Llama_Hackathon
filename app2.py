@@ -161,6 +161,7 @@ def create_user_webhook():
     
     # Create user directory structure
     risk_level = data['risk_level'].title()
+    print("risk_level", risk_level)
     user_id = secure_filename(data['phone_number'])
     user_path = Path(UPLOAD_FOLDER) / risk_level / user_id
     
