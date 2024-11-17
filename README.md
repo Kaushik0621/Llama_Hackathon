@@ -1,6 +1,6 @@
 # LLAMA CARE: GP Llama Receptionist
 <img width="757" alt="Screenshot 2024-11-17 at 12 03 58 PM" src="https://github.com/user-attachments/assets/6c2c85c9-b316-4b80-9a5a-62b8aa3b4268">
-LLAMA CARE: GP Llama Receptionist is an innovative healthcare web application designed to revolutionize patient triage for General Practitioners (GPs). Using AI-powered chat and voice-based interactions, this solution drastically reduces waiting times, enhances triage accuracy, and ensures timely responses for emergency cases.
+<br/>LLAMA CARE: GP Llama Receptionist is an innovative healthcare web application designed to revolutionize patient triage for General Practitioners (GPs). Using AI-powered chat and voice-based interactions, this solution drastically reduces waiting times, enhances triage accuracy, and ensures timely responses for emergency cases.
 
 ---
 
@@ -96,4 +96,4 @@ Password = Admin@123
 <img width="1423" alt="Screenshot 2024-11-17 at 12 07 13 PM" src="https://github.com/user-attachments/assets/9008c70f-e230-4101-8814-3f65509e77d4">
 <img width="1433" alt="Screenshot 2024-11-17 at 12 07 28 PM" src="https://github.com/user-attachments/assets/183c81dc-cb88-4be6-973f-e39de669f599">
 ### Youtube Video
-https://youtu.be/mbcKFoVQ0EI
+<iframe width="560" height="315" src="https://www.youtube.com/embed/mbcKFoVQ0EI?si=7iXpi6mvhTVOfSuA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
