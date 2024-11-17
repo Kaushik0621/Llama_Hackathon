@@ -125,5 +125,64 @@ def admin_logout():
     session.pop('admin', None)
     return redirect(url_for('admin_login'))
 
+@app2.route('/webhook/create_user', methods=['POST'])
+def create_user_webhook():
+    if not request.is_json:
+        return jsonify({"error": "Content-Type must be application/json"}), 400
+    
+    data = request.get_json()
+    
+    # Validate required fields
+    required_fields = ['phone_number', 'patient_name', 'date_of_birth', 
+                      'medical_conditions', 'summary', 'risk_level']
+    
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": "Missing required fields"}), 400
+    
+    # Create base folder path
+    phone_number = data['phone_number'].replace('+', '')  # Remove + from phone number
+    risk_folder = data['risk_level'].capitalize()
+    base_path = Path(UPLOAD_FOLDER) / risk_folder / phone_number
+    
+    try:
+        # Create main user directory
+        base_path.mkdir(parents=True, exist_ok=True)
+        
+        # Create chat session directory
+        chat_session_path = base_path / "chat_session"
+        chat_session_path.mkdir(exist_ok=True)
+        
+        # Create DOCS directory
+        docs_path = base_path / "DOCS"
+        docs_path.mkdir(exist_ok=True)
+        
+        # Create user_info.json
+        user_info = {
+            "Patient Name": data['patient_name'],
+            "Date of Birth": data['date_of_birth'],
+            "Phone Number": data['phone_number'],
+            "Previous Medical Conditions": data['medical_conditions'],
+            "Summary": data['summary']
+        }
+        
+        with open(base_path / "user_info.json", 'w') as f:
+            json.dump(user_info, f, indent=4)
+        
+        # Create initial empty conversation.json
+        initial_conversation = {
+            "transcript": []
+        }
+        
+        with open(chat_session_path / "conversation.json", 'w') as f:
+            json.dump(initial_conversation, f, indent=4)
+        
+        return jsonify({
+            "message": "User folder structure created successfully",
+            "path": str(base_path)
+        }), 201
+        
+    except Exception as e:
+        return jsonify({"error": f"Failed to create user structure: {str(e)}"}), 500
+
 if __name__ == '__main__':
     app2.run(port=5001, debug=True)
