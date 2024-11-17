@@ -3,22 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Details</title>
+    <title>User Details - {{ user_info['user_info']['Patient Name'] }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            width: 70%;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .details {
+            margin: 20px 0;
+        }
+
+        .details strong {
+            font-weight: bold;
+        }
+
+        .chat-history {
+            margin-top: 20px;
+        }
+
+        .chat-history ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .chat-history li {
+            margin-bottom: 10px;
+            background: #eaeaea;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .chat-history li.assistant {
+            background-color: #c9daf8;
+        }
+
+        .chat-history li.user {
+            background-color: #d9f7be;
+        }
+    </style>
 </head>
 <body>
-    <h1>User: {{ user_info.user_id }}</h1>
-    <h2>Chat Sessions</h2>
-    <ul>
-        {% for chat in user_info.chats %}
-        <li>{{ chat.timestamp }}: {{ chat.user_input }} -> {{ chat.ai_response }}</li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <h1>{{ user_info['user_info']['Patient Name'] }}</h1>
+        <div class="details">
+            <p><strong>Date of Birth:</strong> {{ user_info['user_info']['Date of Birth'] }}</p>
+            <p><strong>Phone Number:</strong> {{ user_info['user_info']['Phone Number'] }}</p>
+            <p><strong>Previous Medical Conditions:</strong> {{ user_info['user_info']['Previous Medical Conditions'] }}</p>
+            <p><strong>Summary:</strong> {{ user_info['user_info']['Summary'] }}</p>
+        </div>
 
-    <h2>Uploaded Documents</h2>
-    <ul>
-        {% for doc in user_info.docs %}
-        <li><a href="{{ url_for('admin_download', filename=doc) }}">Download {{ doc.split('/')[-1] }}</a></li>
-        {% endfor %}
-    </ul>
+        <div class="chat-history">
+            <h3>Chat History:</h3>
+            <ul>
+                {% for chat in user_info['chats'] %}
+                    {% for message in chat['transcript'] %}
+                        <li class="{{ message['role'] }}">
+                            <strong>{{ message['role'] | capitalize }}:</strong> {{ message['content'] }}
+                        </li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
