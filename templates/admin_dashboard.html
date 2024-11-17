@@ -221,6 +221,23 @@
                 grid-column: auto;
             }
         }
+
+        .new-cases {
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -242,19 +259,28 @@
             <!-- Red Priority Queue (larger section) -->
             <div class="queue-section larger">
                 <h2><span class="priority-indicator priority-red"></span> High Priority</h2>
-                <p>{{ red_count }} Users</p>
+                <p>{{ red_count }} Processed Cases</p>
+                {% if new_red_count > 0 %}
+                <div class="new-cases">{{ new_red_count }} New Cases</div>
+                {% endif %}
                 <a href="{{ url_for('admin_queue', queue='Red') }}" class="view-details">View Details</a>
             </div>
 
             <!-- Yellow and Green Priority Queue (same line) -->
             <div class="queue-section">
                 <h2><span class="priority-indicator priority-yellow"></span> Medium Priority</h2>
-                <p>{{ yellow_count }} Users</p>
+                <p>{{ yellow_count }} Processed Cases</p>
+                {% if new_yellow_count > 0 %}
+                <div class="new-cases">{{ new_yellow_count }} New Cases</div>
+                {% endif %}
                 <a href="{{ url_for('admin_queue', queue='Yellow') }}" class="view-details">View Details</a>
             </div>
             <div class="queue-section">
                 <h2><span class="priority-indicator priority-green"></span> Low Priority</h2>
-                <p>{{ green_count }} Users</p>
+                <p>{{ green_count }} Processed Cases</p>
+                {% if new_green_count > 0 %}
+                <div class="new-cases">{{ new_green_count }} New Cases</div>
+                {% endif %}
                 <a href="{{ url_for('admin_queue', queue='Green') }}" class="view-details">View Details</a>
             </div>
         </div>

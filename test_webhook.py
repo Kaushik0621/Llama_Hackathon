@@ -13,7 +13,7 @@ test_data = {
     "date_of_birth": "March 15, 1985",
     "medical_conditions": "Asthma",
     "summary": "New patient registration with asthma history",
-    "risk_level": "Yellow"
+    "risk_level": "RED"
 }
 
 # Set headers for JSON content

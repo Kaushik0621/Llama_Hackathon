@@ -5,7 +5,11 @@
         <div class="notification {% if notification.type == 'red' %}high-priority
                                {% elif notification.type == 'yellow' %}medium-priority
                                {% else %}low-priority{% endif %}">
+            <span class="priority-indicator {% if notification.type == 'red' %}priority-red
+                                          {% elif notification.type == 'yellow' %}priority-yellow
+                                          {% else %}priority-green{% endif %}"></span>
             {{ notification.message }}
+            <button class="close-btn">&times;</button>
         </div>
         {% endfor %}
     {% endif %}
@@ -40,24 +44,48 @@
         display: flex;
         align-items: center;
         backdrop-filter: blur(10px);
+        position: relative;
+    }
+
+    .notification .priority-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 12px;
+        flex-shrink: 0;
     }
 
     .notification.high-priority {
         border-left-color: #ff6b6b;
-        background: linear-gradient(to right, #fff, #fff);
-        color: #d63031;
+        background: linear-gradient(to right, rgba(255, 107, 107, 0.1), white);
     }
 
     .notification.medium-priority {
         border-left-color: #ffd93d;
-        background: linear-gradient(to right, #fff, #fff);
-        color: #b7791f;
+        background: linear-gradient(to right, rgba(255, 217, 61, 0.1), white);
     }
 
     .notification.low-priority {
         border-left-color: #51cf66;
-        background: linear-gradient(to right, #fff, #fff);
-        color: #2f9e44;
+        background: linear-gradient(to right, rgba(81, 207, 102, 0.1), white);
+    }
+
+    .close-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+        padding: 5px;
+    }
+
+    .close-btn:hover {
+        opacity: 1;
     }
 
     /* Animation for new notifications */
@@ -75,11 +103,18 @@
     .notification {
         animation: slideIn 0.3s ease forwards;
     }
+
+    /* Priority colors */
+    .priority-red { background-color: #ff6b6b; }
+    .priority-yellow { background-color: #ffd93d; }
+    .priority-green { background-color: #51cf66; }
 </style>
 
 <script>
-    let lastCheck = 0;  // Track last check time
-    let checkTimeout = null;  // For debouncing
+    let lastCheck = 0;
+    let checkTimeout = null;
+    let notificationCount = 0;
+    const MAX_NOTIFICATIONS = 5;
 
     function createNotificationElement(notification) {
         const div = document.createElement('div');
@@ -89,31 +124,37 @@
             'low-priority'
         }`;
         
-        // Add priority icon
-        const icon = document.createElement('span');
-        icon.className = 'priority-indicator';
-        icon.style.marginRight = '12px';
-        icon.classList.add(
-            notification.type === 'red' ? 'priority-red' :
-            notification.type === 'yellow' ? 'priority-yellow' :
-            'priority-green'
-        );
+        // Create priority indicator
+        const indicator = document.createElement('span');
+        indicator.className = `priority-indicator priority-${notification.type}`;
+        div.appendChild(indicator);
         
-        div.appendChild(icon);
+        // Add message
         div.appendChild(document.createTextNode(notification.message));
+        
+        // Add close button
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-btn';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.onclick = () => removeNotification(div);
+        div.appendChild(closeBtn);
+        
         return div;
     }
 
-    // Add debounced check function
-    function debouncedCheck() {
-        if (checkTimeout) clearTimeout(checkTimeout);
-        checkTimeout = setTimeout(checkNotifications, 300);  // 300ms delay
+    function removeNotification(element) {
+        element.style.opacity = '0';
+        element.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (element.parentNode) {
+                element.parentNode.removeChild(element);
+                notificationCount--;
+            }
+        }, 300);
     }
 
-    // Modify the existing checkNotifications function to prevent duplicate checks
     async function checkNotifications() {
         const now = Date.now();
-        // Prevent checking more often than every 2 seconds
         if (now - lastCheck < 2000) return;
         
         try {
@@ -124,33 +165,43 @@
             const container = document.getElementById('notifications-container');
             
             notifications.forEach(notification => {
+                if (notificationCount >= MAX_NOTIFICATIONS) {
+                    // Remove oldest notification if at max
+                    const oldest = container.firstChild;
+                    if (oldest) removeNotification(oldest);
+                }
+
                 const notificationElement = createNotificationElement(notification);
                 container.appendChild(notificationElement);
+                notificationCount++;
                 
-                // Remove notification after 5 seconds
+                // Auto-remove after 10 seconds
                 setTimeout(() => {
-                    notificationElement.style.opacity = '0';
-                    setTimeout(() => {
-                        if (notificationElement.parentNode === container) {
-                            container.removeChild(notificationElement);
-                        }
-                    }, 500);
-                }, 5000);
+                    if (notificationElement.parentNode === container) {
+                        removeNotification(notificationElement);
+                    }
+                }, 10000);
             });
         } catch (error) {
             console.error('Error checking notifications:', error);
         }
     }
 
-    // Add event listener for custom event
-    document.addEventListener('checkNotifications', debouncedCheck);
-
     // Initialize notifications
     document.addEventListener('DOMContentLoaded', () => {
+        // Set initial notification count
+        notificationCount = document.querySelectorAll('.notification').length;
+        
         // Check immediately on load
         checkNotifications();
         
         // Then check every 30 seconds
         setInterval(checkNotifications, 30000);
+    });
+
+    // Add event listener for custom event
+    document.addEventListener('checkNotifications', () => {
+        if (checkTimeout) clearTimeout(checkTimeout);
+        checkTimeout = setTimeout(checkNotifications, 300);
     });
 </script> 

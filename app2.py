@@ -23,6 +23,9 @@ def load_user_data():
     red_count = 0
     yellow_count = 0
     green_count = 0
+    new_red_count = 0
+    new_yellow_count = 0
+    new_green_count = 0
 
     for priority in ["Red", "Yellow", "Green"]:
         priority_dir = data_dir / priority
@@ -50,10 +53,16 @@ def load_user_data():
                 # Count users in each category
                 if priority == "Red":
                     red_count += 1
+                    if user_info.get('is_new_case', False):
+                        new_red_count += 1
                 elif priority == "Yellow":
                     yellow_count += 1
+                    if user_info.get('is_new_case', False):
+                        new_yellow_count += 1
                 elif priority == "Green":
                     green_count += 1
+                    if user_info.get('is_new_case', False):
+                        new_green_count += 1
 
                 # Append user data
                 user_data.append({
@@ -63,7 +72,7 @@ def load_user_data():
                     "chats": chat_sessions
                 })
 
-    return user_data, red_count, yellow_count, green_count
+    return user_data, red_count, yellow_count, green_count, new_red_count, new_yellow_count, new_green_count
 
 @app2.route('/')
 def admin_index():
@@ -90,40 +99,95 @@ def admin_dashboard():
         return redirect(url_for('admin_login'))
 
     # Get the user data and counts
-    user_data, red_count, yellow_count, green_count = load_user_data()
+    user_data, red_count, yellow_count, green_count, new_red_count, new_yellow_count, new_green_count = load_user_data()
 
-    # Get initial notifications
+    # Get initial notifications only for new cases
     initial_notifications = []
-    if red_count > 0:
+    if new_red_count > 0:
         initial_notifications.append({
-            "message": f"You have {red_count} high priority users requiring attention!",
+            "message": f"You have {new_red_count} new high priority cases requiring attention!",
             "type": "red"
         })
-    if yellow_count > 0:
+    if new_yellow_count > 0:
         initial_notifications.append({
-            "message": f"{yellow_count} users in medium priority queue",
+            "message": f"{new_yellow_count} new cases in medium priority queue",
             "type": "yellow"
         })
 
-    # Pass the data to the template
     return render_template('admin_dashboard.html', 
                          red_count=red_count, 
                          yellow_count=yellow_count, 
                          green_count=green_count,
+                         new_red_count=new_red_count,
+                         new_yellow_count=new_yellow_count,
+                         new_green_count=new_green_count,
                          initial_notifications=initial_notifications)
+
+@app2.template_filter('format_datetime')
+def format_datetime(value):
+    try:
+        dt = datetime.fromisoformat(value)
+        return dt.strftime("%B %d, %Y %I:%M %p")
+    except:
+        return value
 
 @app2.route('/admin/queue/<queue>')
 def admin_queue(queue):
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
+    
+    # Get user data for the specified queue
+    user_data = []
+    queue_path = Path(UPLOAD_FOLDER) / queue
+    if queue_path.exists():
+        for user_folder in queue_path.iterdir():
+            if user_folder.is_dir():
+                user_info_path = user_folder / "user_info.json"
+                if user_info_path.exists():
+                    with open(user_info_path) as f:
+                        user_info = json.load(f)
+                        user_data.append({
+                            'user_id': user_folder.name,
+                            'risk_level': queue,
+                            'user_info': user_info
+                        })
+    
+    # Split users into new and existing cases
+    new_cases = [user for user in user_data if user['user_info'].get('is_new_case', False)]
+    existing_cases = [user for user in user_data if not user['user_info'].get('is_new_case', False)]
+    
+    # Standardize the data structure for new cases
+    standardized_new_cases = []
+    for case in new_cases:
+        standardized_case = {
+            'user_id': case.get('user_id', ''),
+            'risk_level': case.get('risk_level', 'N/A'),
+            'user_info': {
+                'phone_number': case.get('phone_number', 'N/A'),
+                'patient_name': case.get('patient_name', 'N/A'),
+                'date_of_birth': case.get('date_of_birth', 'N/A'),
+                'medical_conditions': case.get('medical_conditions', 'N/A'),
+                'summary': case.get('summary', 'N/A'),
+                'created_at': case.get('created_at', '1970-01-01T00:00:00')
+            }
+        }
+        standardized_new_cases.append(standardized_case)
 
-    # Get user data based on the queue passed
-    user_data, red_count, yellow_count, green_count = load_user_data()
-
-    # Filter users based on the queue type (Red, Yellow, Green)
-    filtered_users = [user for user in user_data if user['risk_level'] == queue.capitalize()]
-
-    return render_template('admin_queue.html', queue=queue.capitalize(), users=filtered_users)
+    # Helper function for sorting with fallback
+    def get_creation_time(user):
+        try:
+            return -datetime.fromisoformat(user['user_info'].get('created_at', '1970-01-01T00:00:00')).timestamp()
+        except (ValueError, TypeError):
+            return float('-inf')
+    
+    # Sort both lists by creation date (newest to oldest)
+    standardized_new_cases.sort(key=get_creation_time)
+    existing_cases.sort(key=get_creation_time)
+    
+    return render_template('admin_queue.html', 
+                         queue=queue, 
+                         new_cases=standardized_new_cases,
+                         existing_cases=existing_cases)
 
 @app2.route('/admin/user/<user_id>')
 def admin_user_detail(user_id):
@@ -131,7 +195,7 @@ def admin_user_detail(user_id):
         return redirect(url_for('admin_login'))
 
     # Get user data based on user_id
-    user_data, _, _, _ = load_user_data()
+    user_data, _, _, _, _, _, _ = load_user_data()
 
     # Find the user by user_id
     user_info = next((user for user in user_data if user['user_id'] == user_id), None)
@@ -168,7 +232,7 @@ def create_user_webhook():
     user_path.mkdir(parents=True, exist_ok=True)
     (user_path / "chat_session").mkdir(exist_ok=True)
     
-    # Save user info
+    # Save user info with new case flag
     user_info = {
         "phone_number": data['phone_number'],
         "patient_name": data['patient_name'],
@@ -176,7 +240,8 @@ def create_user_webhook():
         "medical_conditions": data['medical_conditions'],
         "summary": data['summary'],
         "risk_level": risk_level,
-        "created_at": datetime.now().isoformat()
+        "created_at": datetime.now().isoformat(),
+        "is_new_case": True
     }
     
     with open(user_path / "user_info.json", "w") as f:
@@ -192,19 +257,19 @@ def check_notifications():
         return jsonify({"error": "Unauthorized"}), 401
     
     # Load user data to check for new notifications
-    user_data, red_count, yellow_count, green_count = load_user_data()
+    user_data, red_count, yellow_count, green_count, new_red_count, new_yellow_count, new_green_count = load_user_data()
     
     notifications = []
     
     # Example notification logic - you can modify based on your needs
-    if red_count > 0:
+    if new_red_count > 0:
         notifications.append({
-            "message": f"You have {red_count} high priority users requiring attention!",
+            "message": f"You have {new_red_count} new high priority cases requiring attention!",
             "type": "red"
         })
-    if yellow_count > 0:
+    if new_yellow_count > 0:
         notifications.append({
-            "message": f"{yellow_count} users in medium priority queue",
+            "message": f"{new_yellow_count} new cases in medium priority queue",
             "type": "yellow"
         })
     

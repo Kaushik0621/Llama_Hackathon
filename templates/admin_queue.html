@@ -137,18 +137,49 @@
 
     <!-- User List (scrollable) -->
     <ul>
-        {% for user in users %}
-        <li onclick="window.location.href='{{ url_for('admin_user_detail', user_id=user['user_id']) }}'">
-            <strong>User ID:</strong> {{ user['user_id'] }}<br>
-            <strong>Risk Level:</strong> {{ user['risk_level'] }}<br>
-            <strong>Summary:</strong> {{ user['user_info']['Summary'] }}<br>
+        {% if new_cases %}
+        <h3>New Cases</h3>
+        {% for user in new_cases %}
+        <li data-user-id="{{ user.get('user_id', '') }}" class="user-item">
+            <strong>User ID:</strong> {{ user.get('user_id', '') }}<br>
+            <strong>Risk Level:</strong> {{ user.get('risk_level', 'N/A') }}<br>
+            <strong>Summary:</strong> {{ user.get('user_info', {}).get('summary', 'N/A') }}<br>
         </li>
         {% endfor %}
+        {% endif %}
+
+        {% if existing_cases %}
+        <h3>Existing Cases</h3>
+        {% for user in existing_cases %}
+        <li data-user-id="{{ user.get('user_id', '') }}" class="user-item">
+            <strong>User ID:</strong> {{ user.get('user_id', '') }}<br>
+            <strong>Risk Level:</strong> {{ user.get('risk_level', 'N/A') }}<br>
+            <strong>Summary:</strong> {{ user.get('user_info', {}).get('summary', 'N/A') }}<br>
+        </li>
+        {% endfor %}
+        {% endif %}
     </ul>
 
     <!-- Footer -->
     <footer class="footer">
         &copy; 2024 Admin Dashboard. All rights reserved.
     </footer>
+
+    <!-- Add this before the closing body tag -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userItems = document.querySelectorAll('.user-item');
+            
+            userItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    window.location.href = `/admin/user/${userId}`;  // Adjust this URL pattern to match your route
+                });
+                
+                // Add hover effect through JavaScript (optional)
+                item.style.cursor = 'pointer';
+            });
+        });
+    </script>
 </body>
 </html>
