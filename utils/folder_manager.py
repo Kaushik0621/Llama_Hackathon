@@ -1,28 +1,22 @@
 import os
 import json
-from datetime import datetime
-from werkzeug.utils import secure_filename
 
-def create_user_folder(email, phone):
-    """
-    Creates a folder for a user with the format "email_phone".
 
-    Args:
-        email (str): User's email.
-        phone (str): User's phone number.
-    """
-    folder_name = f"data/{email}_{phone}"
+
+def create_user_folder(phone):
+    folder_name = f"data/{phone}"
     if not os.path.exists(folder_name):
         os.makedirs(f"{folder_name}/chat_session")
         os.makedirs(f"{folder_name}/DOCS")
+    print(f"Folder created for user with phone number: {phone}")
 
 
-def save_chat(email, phone, user_input, ai_response):
+
+def save_chat(phone, user_input, ai_response):
     """
     Saves the chat session to the user's chat session folder.
 
     Args:
-        email (str): User's email ID.
         phone (str): User's phone number.
         user_input (str): User's input message.
         ai_response (str): AI-generated response.
@@ -30,45 +24,87 @@ def save_chat(email, phone, user_input, ai_response):
     Returns:
         str: Path to the saved chat session file.
     """
-    folder_name = f"data/{email}_{phone}"
-    if not os.path.exists(folder_name):
-        create_user_folder(email, phone)
-
-    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-    chat_file_path = f"{folder_name}/chat_session/{timestamp}.json"
+    folder_name = f"data/{phone}/chat_session"
+    os.makedirs(folder_name, exist_ok=True)
 
     chat_data = {
-        "timestamp": timestamp,
+        "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         "user_input": user_input,
         "ai_response": ai_response
     }
 
-    with open(chat_file_path, 'w') as chat_file:
-        json.dump(chat_data, chat_file)
+    file_path = os.path.join(folder_name, "conversation.json")
+    with open(file_path, "w") as file:
+        json.dump(chat_data, file)
 
-    return chat_file_path
+    return file_path
 
-
-def save_uploaded_document(email, phone, file):
+def save_to_risk_folder(phone, risk_level, user_info, conversation):
     """
-    Saves an uploaded document to the user's DOCS folder.
+    Saves user data and conversation in the corresponding risk-level folder.
 
     Args:
-        email (str): User's email ID.
         phone (str): User's phone number.
-        file (FileStorage): The uploaded file.
+        risk_level (str): Risk level ("Red", "Yellow", "Green").
+        user_info (dict): User information to save.
+        conversation (list): Conversation data to save.
+    """
+    base_path = "Admin_Data"
+    risk_folder = os.path.join(base_path, risk_level)
+
+    # Create the risk-level folder if it doesn't exist
+    os.makedirs(risk_folder, exist_ok=True)
+
+    # Create a user-specific folder using the phone number
+    user_folder = os.path.join(risk_folder, phone)
+    os.makedirs(user_folder, exist_ok=True)
+
+    # Create a chat session subfolder
+    chat_session_folder = os.path.join(user_folder, "chat_session")
+    os.makedirs(chat_session_folder, exist_ok=True)
+
+    # Save user info
+    user_info_path = os.path.join(user_folder, "user_info.json")
+    with open(user_info_path, "w") as user_file:
+        json.dump(user_info, user_file)
+
+    # Save conversation data
+    conversation_file_path = os.path.join(chat_session_folder, "conversation.json")
+    with open(conversation_file_path, "w") as conversation_file:
+        json.dump(conversation, conversation_file)
+
+    print(f"Data saved for user {phone} under {risk_level} folder.")
+
+
+import os
+import json
+from datetime import datetime
+
+def save_chat_to_folder(phone_no, conversation_context, risk_level):
+    """
+    Saves the chat conversation to a folder based on the detected risk level.
+
+    Args:
+        phone_no (str): User's phone number.
+        conversation_context (list): The entire conversation context.
+        risk_level (str): The detected risk level ("Red", "Yellow", "Green").
 
     Returns:
-        str: Path to the saved document or an error message.
+        str: Path to the saved chat file.
     """
-    folder_name = f"data/{email}_{phone}/DOCS"
-    if not os.path.exists(folder_name):
-        create_user_folder(email, phone)
+    # Define the base directory for risk levels
+    base_dir = f"data/{risk_level}"
+    user_dir = os.path.join(base_dir, phone_no)
 
-    if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in {'pdf', 'png', 'jpg', 'jpeg'}:
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(folder_name, filename)
-        file.save(file_path)
-        return file_path, None
-    else:
-        return None, "Unsupported file format. Please upload PDF, PNG, JPG, or JPEG files."
+    # Ensure the directories exist
+    os.makedirs(user_dir, exist_ok=True)
+
+    # Save the chat session with a timestamp
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    chat_file_path = os.path.join(user_dir, f"chat_{timestamp}.json")
+
+    with open(chat_file_path, "w") as f:
+        json.dump({"conversation": conversation_context}, f, indent=4)
+
+    print(f"Chat saved to {chat_file_path}")
+    return chat_file_path

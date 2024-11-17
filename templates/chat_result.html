@@ -1,55 +1,227 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Chat Result</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: #F9FAFB; /* Light background */
+        }
+
+        /* Left Navigation Bar */
+        .navbar {
+            width: 240px;
+            color: white;
+            padding-top: 20px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-y: auto;
+            z-index: 1;
+            background: linear-gradient(300deg, #2b6cb0, #3182ce, #63b3ed); /* Gradient from dark blue to light blue */
+            overflow-x: hidden; /* Ensures no horizontal overflow */
+        }
+
+        /* Logo inside navbar */
+        .navbar .logo {
+            width: 80%;
+            margin-bottom: 20px;
+            max-width: 100%;
+        }
+
+        .navbar img {
+            width: 100%;
+            max-height: 140px;
+            object-fit: contain;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            width: 80%;
+            text-align: center;
+            padding: 12px;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .navbar a:hover,
+        .navbar a.selected {
+            background-color: #2563EB; /* Highlight color when selected or hovered */
+        }
+
+        /* Main Content Area */
+        .container {
+            margin-left: 260px; /* Space for the left navbar */
+            width: calc(100% - 260px); /* Adjust width to exclude navbar */
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            gap: 30px;
+        }
+
+        /* Chatbot Container */
+        .chat-container {
+            width: 100%;
+            max-width: 900px; /* Restrict max width for better readability */
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Section */
+        .header {
+            background-color: #3B82F6;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .chat-box .message {
+            margin-bottom: 15px;
+        }
+
+        .chat-box .user {
+            text-align: right;
+            color: #3B82F6;
+            font-weight: bold;
+        }
+
+        .chat-box .assistant {
+            text-align: left;
+            color: #10B981;
+            font-weight: bold;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background-color: #fff;
+            gap: 10px;
+        }
+
+        .input-area input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .input-area button {
+            padding: 10px 20px;
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .input-area button:hover {
+            background-color: #2563EB;
+        }
+    </style>
 </head>
 <body>
-    <h1>Risk Level: {{ risk_level }}</h1>
-    {% if risk_level == "Red" %}
-        <p>{{ message }}</p>
-    {% else %}
-        <h2>Start Chatting</h2>
-        <div id="chat-interface">
-            <div id="chat-messages"></div>
-            <form id="chat-form" method="POST">
-                <input type="text" id="message" name="message" placeholder="Type your message here..." required>
+
+    <!-- Left Navigation Bar -->
+    <div class="navbar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo4.png') }}" alt="Logo">
+        </div>
+        <div class="user-greeting">
+            Welcome, {{ current_user.name }} <!-- User's name -->
+        </div>
+        <a href="{{ url_for('base') }}">Home</a>
+        <a href="{{ url_for('chat') }}" class="selected">Chat</a> <!-- Highlighted -->
+        <a href="{{ url_for('dietitian') }}">Dietitian</a>
+        <a href="{{ url_for('blood_report_explainer') }}">Blood Report Explainer</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="container">
+        <!-- Chat Interface -->
+        <div class="chat-container">
+            <div class="header">Health Assistant Chat</div>
+            <div class="chat-box" id="chatBox"></div>
+
+            <!-- Chat Input Area -->
+            <form id="chatForm" class="input-area" onsubmit="sendMessage(event)">
+                <input type="text" id="userInput" placeholder="Type your message here..." required>
                 <button type="submit">Send</button>
             </form>
         </div>
-    {% endif %}
-    <a href="{{ url_for('reset_chat') }}">Restart Questions</a>
+    </div>
+
+    <script>
+        async function sendMessage(event) {
+            event.preventDefault();
+
+            const input = document.getElementById("userInput");
+            const chatBox = document.getElementById("chatBox");
+
+            // Append user message to the chat box
+            const userMessage = document.createElement("div");
+            userMessage.classList.add("message", "user");
+            userMessage.textContent = `You: ${input.value}`;
+            chatBox.appendChild(userMessage);
+
+            // Scroll to the bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Send message to the server
+            const response = await fetch(location.href, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: input.value }),
+            });
+
+            const data = await response.json();
+
+            // Append assistant reply to the chat box
+            const assistantMessage = document.createElement("div");
+            assistantMessage.classList.add("message", "assistant");
+            assistantMessage.textContent = `Assistant: ${data.reply}`;
+            chatBox.appendChild(assistantMessage);
+
+            // Clear input field
+            input.value = "";
+
+            // Scroll to the bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+
 </body>
-<script>
-    // Simple chat interface logic
-    const form = document.getElementById('chat-form');
-    const messagesDiv = document.getElementById('chat-messages');
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const messageInput = document.getElementById('message');
-        const message = messageInput.value;
-        if (!message) return;
-
-        // Add user message to chat
-        const userMessage = document.createElement('div');
-        userMessage.textContent = `You: ${message}`;
-        messagesDiv.appendChild(userMessage);
-
-        // Send message to server
-        const response = await fetch(location.href, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message }),
-        });
-        const data = await response.json();
-
-        // Add assistant's reply to chat
-        const assistantMessage = document.createElement('div');
-        assistantMessage.textContent = `Assistant: ${data.reply}`;
-        messagesDiv.appendChild(assistantMessage);
-
-        // Clear the input field
-        messageInput.value = '';
-    });
-</script>
 </html>

@@ -1,7 +1,8 @@
 import os
 import requests
-from .folder_manager import save_chat
-from .database_manager import update_db
+from .folder_manager import save_to_risk_folder
+from .folder_manager import save_chat_to_folder
+
 
 # GROQ API configuration
 BASE_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -9,83 +10,83 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # Initialize conversation context
 conversation_context = [
-    {"role": "system", "content": "You are a helpful assistant."}
+    {"role": "system", "content": "You are a medical professional. Assist the user with their medical queries."}
 ]
-
-def handle_chat(user_input, user_data, risk_level):
+def handle_chat(user_input, user_data):
     """
-    Handles chat interaction using GROQ API and returns the reply and folder path.
+    Handles chat interaction using the LLM and saves data under the risk level folder.
 
     Args:
         user_input (str): The user's input message.
-        user_data (dict): User details (email and phone).
-        risk_level (str): The user's risk level ("Red", "Yellow", or "Green").
+        user_data (dict): User's details.
 
     Returns:
-        tuple: A tuple containing the reply and folder path of the saved chat session.
+        tuple: A tuple containing the assistant reply and the folder path.
     """
-    if not GROQ_API_KEY:
-        raise ValueError("GROQ_API_KEY is not set in the environment variables.")
+    # Append user input to the conversation context
+    conversation_context.append({"role": "user", "content": user_input})
 
+    # Simulate LLM response
+    assistant_reply = "Thank you for your message. Let me assist you further."
+    conversation_context.append({"role": "assistant", "content": assistant_reply})
+
+    # Detect risk level
+    risk_level = detect_risk_level(conversation_context)
+    if risk_level not in ["Red", "Yellow", "Green"]:
+        raise ValueError(f"Unexpected risk level: {risk_level}")
+
+    # Save chat to folder based on risk level
+    folder_path = save_chat_to_folder(user_data["Phone_No"], conversation_context, risk_level)
+    print(f"Data saved for user {user_data['Phone_No']} under {risk_level} folder.")
+
+    return assistant_reply, folder_path
+
+
+def detect_risk_level(conversation_context):
+    """
+    Analyzes the conversation context to detect the risk level.
+
+    Args:
+        conversation_context (list): List of messages exchanged in the chat.
+
+    Returns:
+        str: Detected risk level ("Red", "Yellow", "Green").
+    """
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json",
     }
 
-    # Define the system message based on risk level
-    if risk_level == "Red":
-        update_db(risk_level, user_data)  # Update the priority database
-        return "You will receive a call soon. Immediate assistance is being arranged.", None
-    elif risk_level == "Yellow":
-        system_message = "You are a medical professional. Suggest the patient what they need."
-    else:  # Green
-        system_message = "You are a nurse. Suggest and explain medical reports to the user."
-
-    # Append system message if this is the first interaction
-    if len(conversation_context) == 1:
-        conversation_context.append({"role": "system", "content": system_message})
-
-    # Validate and add user input
-    if not user_input.strip():
-        return "Input cannot be empty.", None
-    conversation_context.append({"role": "user", "content": user_input.strip()})
-
-    # Build the payload for the API request
     payload = {
-        "model": "llama3-8b-8192",  # Replace with a valid model from GROQ documentation
-        "messages": conversation_context,
-        "temperature": 0.5,
-        "max_tokens": 150,
+        "model": "llama3-8b-8192",
+        "messages": [
+            {"role": "system", "content": "You are a medical expert. Assess the severity of the situation."},
+            {"role": "user", "content": f"Analyze this conversation: {conversation_context}. What is the risk level (Red, Yellow, Green)?"}
+        ],
+        "temperature": 0,
+        "max_tokens": 50,
         "top_p": 1,
         "n": 1,
         "stream": False,
     }
 
     try:
-        # Send the POST request to GROQ API
         response = requests.post(BASE_URL, json=payload, headers=headers)
         response.raise_for_status()
 
-        # Parse the API response
         data = response.json()
-        assistant_reply = data['choices'][0]['message']['content'].strip()
+        raw_risk_level = data['choices'][0]['message']['content'].strip()
 
-        # Save the chat session
-        folder_path = save_chat(user_data["Email_id"], user_data["Phone_No"], user_input, assistant_reply)
-
-        # Append assistant reply to the conversation context
-        conversation_context.append({"role": "assistant", "content": assistant_reply})
-
-        # Update the database with the risk level (only for Yellow and Green)
-        if risk_level in ["Yellow", "Green"]:
-            update_db(risk_level, user_data)
-
-        return assistant_reply, folder_path
+        # Extract only the risk level from the response
+        if "Red" in raw_risk_level:
+            return "Red"
+        elif "Yellow" in raw_risk_level:
+            return "Yellow"
+        elif "Green" in raw_risk_level:
+            return "Green"
+        else:
+            raise ValueError(f"Unexpected risk level: {raw_risk_level}")
 
     except requests.exceptions.RequestException as e:
-        # Log detailed error information for debugging
-        print("API Request Error:", e)
-        if e.response is not None:
-            print("Response Status Code:", e.response.status_code)
-            print("Response Content:", e.response.text)
-        return f"Error: {e}", None
+        print("Risk Detection API Request Error:", e)
+        return "Unknown"

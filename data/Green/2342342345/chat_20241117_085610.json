@@ -1,0 +1,16 @@
+{
+    "conversation": [
+        {
+            "role": "system",
+            "content": "You are a medical professional. Assist the user with their medical queries."
+        },
+        {
+            "role": "user",
+            "content": "hello"
+        },
+        {
+            "role": "assistant",
+            "content": "Thank you for your message. Let me assist you further."
+        }
+    ]
+}

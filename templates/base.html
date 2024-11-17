@@ -158,7 +158,7 @@
                 Welcome, {{ current_user.name }} <!-- User's name -->
             </div>
             <a href="{{ url_for('base') }}">Home</a>
-            <a href="{{ url_for('chat') }}">Go to Chat</a>
+            <a href="{{ url_for('chat') }}">Chat</a>
             <a href="{{ url_for('dietitian') }}">Dietitian</a>
             <a href="{{ url_for('blood_report_explainer') }}">Blood Report Explainer</a>
             <a href="{{ url_for('logout') }}">Logout</a>
@@ -170,18 +170,18 @@
             <!-- Healthy Food Recipes Section -->
             <div class="section">
                 <h2 class="section-title">Healthy Food Recipes</h2>
-                <div class="recipe-item">
-                    <img src="https://via.placeholder.com/300x200" alt="Recipe 1">
+                <div class="recipe-item" onclick="window.open('https://www.youtube.com/watch?v=WaaQyqDGR5k', '_blank')">
+                    <img src={{ url_for('static', filename='images/Healthy_Smoothie.jpg') }} alt="Recipe 1">
                     <h3>Healthy Smoothie</h3>
                     <p>A refreshing smoothie made with fresh fruits and greens.</p>
                 </div>
-                <div class="recipe-item">
-                    <img src="https://via.placeholder.com/300x200" alt="Recipe 2">
+                <div class="recipe-item" onclick="window.open('https://www.youtube.com/watch?v=akWqrxw6DkE', '_blank')">
+                    <img src={{ url_for('static', filename='images/Quinoa_Salad.jpg') }} alt="Recipe 2">
                     <h3>Quinoa Salad</h3>
                     <p>High-protein quinoa salad with mixed vegetables and dressing.</p>
                 </div>
-                <div class="recipe-item">
-                    <img src="https://via.placeholder.com/300x200" alt="Recipe 3">
+                <div class="recipe-item"  onclick="window.open('https://www.youtube.com/watch?v=wM0AdeUBOOE', '_blank')">
+                    <img src={{ url_for('static', filename='images/grilled_chicken.jpg') }} alt="Recipe 3">
                     <h3>Grilled Chicken & Veggies</h3>
                     <p>A balanced meal with grilled chicken and fresh veggies.</p>
                 </div>

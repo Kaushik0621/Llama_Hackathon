@@ -24,16 +24,16 @@
             align-items: center;
             background: linear-gradient(to right, #00c6ff, #0072ff);
             color: white;
-            padding: 5px 30px;
+            padding: 10px 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .header .logo img {
-            height: 80px;
+            height: 50px;
         }
 
         .header .title {
-            font-size: 30px;
+            font-size: 24px;
             font-weight: bold;
         }
 
@@ -41,7 +41,7 @@
             color: white;
             text-decoration: none;
             background-color: #E74C3C;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 5px;
             font-size: 14px;
             font-weight: bold;
@@ -56,55 +56,43 @@
             background-color: #4CAF50;
             color: white;
             text-align: center;
-            padding: 20px 0;
+            padding: 10px 0;
             margin: 0;
+            font-size: 18px;
         }
 
         .queue-title {
             text-align: center;
-            font-size: 24px;
-            margin: 20px 0;
+            font-size: 20px;
+            margin: 10px 0;
         }
 
         ul {
             list-style-type: none;
             padding: 0;
-            margin: 20px auto;
-            max-width: 800px;
-            overflow-y: auto; /* Allow scrolling for this section */
-            max-height: 60vh; /* Restrict the height for scrolling */
+            margin: 0;
+            overflow-y: auto; /* Allow scrolling */
+            flex-grow: 1;
+            max-height: calc(100vh - 140px); /* Adjust for header and footer */
         }
 
         li {
             background: white;
             border: 1px solid #ddd;
-            margin-bottom: 10px;
+            margin: 5px 10px;
             border-radius: 8px;
-            padding: 15px;
+            padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             transition: background-color 0.3s;
-        }
-
-        strong {
-            font-weight: bold;
         }
 
         li:hover {
             background-color: #f1f1f1;
         }
 
-        /* For displaying sub-lists */
-        ul ul {
-            list-style-type: disc;
-            margin-left: 20px;
-        }
-
-        ul ul li {
-            background: none;
-            border: none;
-            padding: 5px 0;
-            box-shadow: none;
+        strong {
+            font-weight: bold;
         }
 
         /* Footer */
@@ -112,11 +100,9 @@
             background-color: #2C3E50;
             color: white;
             text-align: center;
-            padding: 15px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            font-size: 14px;
+            padding: 10px;
+            font-size: 12px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
