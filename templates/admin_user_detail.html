@@ -11,15 +11,58 @@
             padding: 0;
             background-color: #f4f4f9;
             color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* Prevent page scroll */
         }
 
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            color: white;
+            padding: 5px 30px; /* Reduced padding to make the header smaller */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .logo img {
+            height: 80px; /* Reduced logo size */
+        }
+
+        .header .title {
+            font-size: 30px; /* Reduced title font size */
+            font-weight: bold;
+        }
+
+        .header .logout-link {
+            color: white;
+            text-decoration: none;
+            background-color: #E74C3C;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .header .logout-link:hover {
+            background-color: #C0392B;
+        }
+
+        /* Container for user details */
         .container {
+            flex: 1;
             width: 70%;
             margin: 0 auto;
             padding: 20px;
             background: white;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; /* Allow scrolling for this section */
+            max-height: calc(100vh - 120px); /* Adjust the height based on header/footer height */
         }
 
         h1 {
@@ -58,10 +101,54 @@
         .chat-history li.user {
             background-color: #d9f7be;
         }
+
+        /* Back Button */
+        .back-button {
+            text-decoration: none;
+            background-color: #3498DB;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: block;
+            width: max-content;
+            margin: 0 auto;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #2980B9;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #2C3E50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo4.png') }}" alt="Logo">
+        </div>
+        <div class="title">Admin Dashboard</div>
+        <a href="{{ url_for('admin_logout') }}" class="logout-link">Logout</a>
+    </header>
+
+    <!-- User Details Container -->
     <div class="container">
+        <!-- Back Button -->
+        <a href="{{ url_for('admin_queue', queue='Red') }}" class="back-button">Back to Queue</a>
+
         <h1>{{ user_info['user_info']['Patient Name'] }}</h1>
         <div class="details">
             <p><strong>Date of Birth:</strong> {{ user_info['user_info']['Date of Birth'] }}</p>
@@ -83,5 +170,10 @@
             </ul>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        &copy; 2024 Admin Dashboard. All rights reserved.
+    </footer>
 </body>
 </html>

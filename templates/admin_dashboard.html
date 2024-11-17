@@ -24,7 +24,7 @@
             align-items: center;
             background: linear-gradient(to right, #00c6ff, #0072ff);
             color: white;
-            padding: 5px 30px; /* Reduced padding to make the header smaller */
+            padding: 0px 30px; /* Reduced padding to make the header smaller */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
@@ -58,8 +58,8 @@
             flex: 1;
             padding: 20px;
             justify-content: space-between;
-            gap: 10px;
-            margin-top: 10px; /* Reduced gap between header and main content */
+            gap: 20px;
+            margin-top: 0px; /* Reduced gap between header and main content */
             margin-bottom: 60px; /* Add space for footer */
             overflow: hidden;
         }
@@ -68,7 +68,7 @@
         .left-section {
             display: flex;
             flex-direction: column;
-            width: 30%;
+            width: 60%;
             gap: 10px;
         }
 
@@ -81,7 +81,6 @@
             text-align: center;
             transition: transform 0.3s ease, border 0.5s ease, box-shadow 0.3s ease;
             flex: 1; /* Ensure cards are aligned */
-            width: 50%; /* Ensure cards take full width */
         }
 
         .queue-section h2 {
@@ -97,12 +96,6 @@
         /* Make Red Priority larger */
         .queue-section.larger {
             flex: 2; /* Red card takes more space */
-        }
-
-        /* Hover effect */
-        .queue-section:hover {
-            transform: scale(1.05); /* Slight scaling effect */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
         }
 
         /* Priority Indicators */
@@ -124,6 +117,12 @@
 
         .priority-green {
             background-color: #27AE60;
+        }
+
+        /* Hover effect */
+        .queue-section:hover {
+            transform: scale(1.05); /* Slight scaling effect */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
         }
 
         /* Moving border effect */
@@ -160,7 +159,7 @@
 
         /* Right Section (Background Image) */
         .right-section {
-            width: 50%;
+            width: 35%;
             background: url('{{ url_for("static", filename="images/background2.webp") }}') no-repeat center center;
             background-size: cover;
             border-radius: 10px;
@@ -214,14 +213,12 @@
                 <a href="{{ url_for('admin_queue', queue='Red') }}" class="view-details">View Details</a>
             </div>
 
-            <!-- Yellow Priority Queue -->
+            <!-- Yellow and Green Priority Queue (same line) -->
             <div class="queue-section">
                 <h2><span class="priority-indicator priority-yellow"></span> Medium Priority</h2>
                 <p>{{ yellow_count }} Users</p>
                 <a href="{{ url_for('admin_queue', queue='Yellow') }}" class="view-details">View Details</a>
             </div>
-
-            <!-- Green Priority Queue (smaller section) -->
             <div class="queue-section">
                 <h2><span class="priority-indicator priority-green"></span> Low Priority</h2>
                 <p>{{ green_count }} Users</p>
