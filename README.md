@@ -95,7 +95,8 @@ ID = ADMIN
 Password = Admin@123
 <img width="1423" alt="Screenshot 2024-11-17 at 12 07 13 PM" src="https://github.com/user-attachments/assets/9008c70f-e230-4101-8814-3f65509e77d4">
 <img width="1433" alt="Screenshot 2024-11-17 at 12 07 28 PM" src="https://github.com/user-attachments/assets/183c81dc-cb88-4be6-973f-e39de669f599">
+
 ### Youtube Video
 <br/>
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=mbcKFoVQ0EI&t=1s)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/mbcKFoVQ0EI&t=1s/0.jpg)](https://www.youtube.com/watch?v=mbcKFoVQ0EI&t=1s)
 
