@@ -97,4 +97,5 @@ Password = Admin@123
 <img width="1433" alt="Screenshot 2024-11-17 at 12 07 28 PM" src="https://github.com/user-attachments/assets/183c81dc-cb88-4be6-973f-e39de669f599">
 ### Youtube Video
 <br/>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/mbcKFoVQ0EI?si=7iXpi6mvhTVOfSuA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=mbcKFoVQ0EI&t=1s)
+
